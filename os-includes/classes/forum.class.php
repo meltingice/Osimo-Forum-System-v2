@@ -1,0 +1,5 @@
+<?
+class OsimoForum{
+	public $forumID;
+}
+?>
