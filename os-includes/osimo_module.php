@@ -1,9 +1,10 @@
 <?
 class OsimoModule{
 	protected $defaults;
+	public $osimo;
 	
 	function OsimoModule(){
-		
+
 	}
 	
 	public function options($option){

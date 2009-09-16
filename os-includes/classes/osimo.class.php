@@ -3,7 +3,7 @@ class Osimo{
 	public $user;
 	public $db,$cache,$paths,$theme,$debug;
 	private $defaults,$allowOptMod;
-	private $cacheOptions,$dbOptions,$debugOptions;
+	private $cacheOptions,$dbOptions,$debugOptions,$themeOptions;
 	
 	public function Osimo($options=false,$siteFolder=false){
 		if(!defined('SITE_FOLDER') && (!$siteFolder || empty($siteFolder))){
@@ -50,9 +50,13 @@ class Osimo{
 		}
 		
 		$this->debug = new OsimoDebug($this->debugOptions);
+		$this->debug->osimo = $this;
 		$this->cache = new OsimoCache($this->cacheOptions);
+		$this->cache->osimo = $this;
 		$this->db = new OsimoDB($this->dbOptions);
-		$this->theme = new OsimoTheme();
+		$this->db->osimo = $this;
+		$this->theme = new OsimoTheme($this->themeOptions);
+		$this->theme->osimo = $this;
 	}
 	
 	private function parseOptions($options){
