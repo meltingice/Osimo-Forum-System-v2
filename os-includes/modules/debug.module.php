@@ -44,6 +44,10 @@ class OsimoDebug extends OsimoModule{
 		$this->msgs[] = $msg;
 	}
 	
+	public function error($msg,$fatal=false){
+		$fatal ? trigger_error($msg,E_USER_ERROR) : trigger_error($msg);
+	}
+	
 	public function dump(){
 		echo "Errors:<br />";
 		foreach($this->errors as $hash=>$error){

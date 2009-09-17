@@ -20,6 +20,7 @@ class OsimoPaths extends OsimoModule{
 		define('ABS_INC',ABS_ROOT.'os-includes/');
 		define('ABS_INC_CLASSES',ABS_INC.'classes/');
 		define('ABS_INC_MODULES',ABS_INC.'modules/');
+		define('ABS_THEMES',ABS_ROOT.'os-content/themes/');
 		
 		/* Define relative paths */
 		define('SITE_URL',$this->siteURL);

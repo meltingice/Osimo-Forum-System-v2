@@ -1,6 +1,7 @@
 <?
 class OsimoTheme extends OsimoModule{
 	protected $theme,$title;
+	private $theme_path,$cache_file,$view;
 	private $css,$js;
 	
 	function OsimoTheme($options=false){
@@ -16,6 +17,8 @@ class OsimoTheme extends OsimoModule{
 	private function init(){
 		$this->css = array();
 		$this->js = array();
+		
+		$this->theme_path = ABS_THEMES.$this->theme.'/';
 		
 		$this->addJavascript(SITE_URL.'os-includes/js/jquery.js');
 		$this->addJavascript(SITE_URL.'os-includes/js/jquery-ui.js');
@@ -47,6 +50,105 @@ class OsimoTheme extends OsimoModule{
 		}
 
 		if($echo){ echo $html; }
+		return $html;
+	}
+	
+	/* Theme parsing functions */
+	public function load($file){
+		if(!is_file($this->theme_path."views/$file.html")){
+			$this->osimo->debug->error("OsimoTheme: unable to locate view '$file'",true);
+			return false;
+		}
+		
+		$this->view = $this->theme_path."views/$file.html";
+		$this->cache_file = $this->theme_path."cache/$file.php";
+		
+		if($this->validate_cache()){
+			include($this->cache_file);
+		}
+		else{
+			$this->osimo->debug->error("OsimoTheme: unable to load cache file",true);
+		}
+	}
+	
+	public function include_file($file){
+		$this->view = $this->theme_path."includes/$file.html";
+		$this->cache_file = $this->theme_path."cache/$file.inc.php";
+		if($this->validate_cache()){
+			include($this->cache_file);
+		}
+	}
+	
+	private function validate_cache(){
+		if(!is_dir($this->theme_path.'cache/')){
+			if(!mkdir($this->theme_path.'cache/')){
+				$this->osimo->debug->error("OsimoTheme: unable to create theme cache directory, please check folder permissions!",true);
+				return false;
+			}
+		}
+		
+		if(is_file($this->cache_file)){
+			if(filemtime($this->view) > filemtime($this->cache_file)){
+				if(!unlink($this->cache_file)){
+					$this->osimo->debug->error("OsimoTheme: unable to regenerate cache for '".$this->view."'.",true);
+					return false;
+				}
+				
+				return $this->cache_view();
+			}
+		}
+		else{
+			return $this->cache_view();
+		}
+		
+		return true;
+	}
+	
+	private function cache_view(){
+		$view_p = fopen($this->view,'r');
+		if(!$view_p){
+			$this->osimo->debug->error("OsimoTheme: unable to read theme view file.",true);
+			return false;
+		}
+		
+		$html = fread($view_p,filesize($this->view));
+		fclose($view_p);
+		
+		$html = $this->parse_view($html);
+		
+		$cache_p = fopen($this->cache_file,'w');
+		if(!$cache_p){
+			$this->osimo->debug->error("OsimoTheme: unable to create cache file, check folder permissions!",true);
+			return false;
+		}
+		
+		if(!fwrite($cache_p,$html)){
+			$this->osimo->debug->error("OsimoTheme: unable to write to cache file",true);
+			return false;
+		}
+		
+		fclose($cache_p);
+		
+		return true;
+	}
+	
+	private function parse_view($html){
+		$html = preg_replace(
+			array(
+				"/\{using ([^}]*)\}/i",
+				"/\{include ([^}]*)\}/i",
+				"/\{func ([A-Za-z_]*)->([^}]*)\(([^\)]*)\)\}/i"
+			),
+			array(
+				"<? 
+					include_once('".$this->theme_path.'models/$1.php\');
+					$$1 = new $1($this->osimo);
+				?>',
+				'<? $this->osimo->theme->include_file("$1"); ?>',
+				'<? $$1->$2($3); ?>'
+			)
+			,$html);
+		
 		return $html;
 	}
 }
