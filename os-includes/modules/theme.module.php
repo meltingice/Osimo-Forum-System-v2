@@ -1,5 +1,6 @@
 <?
 class OsimoTheme extends OsimoModule{
+	public $page_type;
 	protected $theme,$title;
 	private $theme_path,$cache_file,$view;
 	private $css,$js;
@@ -28,6 +29,15 @@ class OsimoTheme extends OsimoModule{
 		$this->title = $title.' - Powered by Osimo';
 	}
 	
+	public function autoTitle(){
+		if($this->page_type == 'index'){
+			$this->setTitle(OS_SITE_TITLE);
+		}
+		elseif($this->page_type == 'forum'){
+			$this->setTitle(OS_SITE_TITLE);
+		}
+	}
+	
 	public function addStylesheet($url){
 		if(!in_array($url,$this->css)){
 			$this->css[] = $url;
@@ -53,12 +63,33 @@ class OsimoTheme extends OsimoModule{
 		return $html;
 	}
 	
+	public function setPageType($type){
+		$this->page_type = strtolower(str_replace(" ","_",$type));
+	}
+	
+	private function autoSetPageType($page){
+		$page = strtolower(str_replace(" ","_",$page));
+		$types = array(
+			'index','forum',
+			'thread','profile'
+		);
+		
+		if(in_array($page,$types)){
+			$this->page_type = $page;
+		}
+		else{
+			$this->page_type = $other;
+		}
+	}
+	
 	/* Theme parsing functions */
 	public function load($file){
 		if(!is_file($this->theme_path."views/$file.html")){
 			$this->osimo->debug->error("OsimoTheme: unable to locate view '$file'",true);
 			return false;
 		}
+		
+		$this->autoSetPageType($file);
 		
 		$this->view = $this->theme_path."views/$file.html";
 		$this->cache_file = $this->theme_path."cache/$file.php";
@@ -133,23 +164,23 @@ class OsimoTheme extends OsimoModule{
 	}
 	
 	private function parse_view($html){
-		$html = preg_replace(
-			array(
-				"/\{using ([^}]*)\}/i",
-				"/\{include ([^}]*)\}/i",
-				"/\{func ([A-Za-z_]*)->([^}]*)\(([^\)]*)\)\}/i"
-			),
-			array(
-				"<? 
-					include_once('".$this->theme_path.'models/$1.php\');
-					$$1 = new $1($this->osimo);
-				?>',
-				'<? $this->osimo->theme->include_file("$1"); ?>',
-				'<? $$1->$2($3); ?>'
-			)
-			,$html);
-		
-		return $html;
+	    $html = preg_replace(
+	    	array(
+	    		"/\{using ([^}]*)\}/i",
+	    		"/\{include ([^}]*)\}/i",
+	    		"/\{func ([A-Za-z_]*)->([^}]*)\(([^\)]*)\)\}/i"
+	    	),
+	    	array(
+	    		"<? 
+	    			include_once('".$this->theme_path.'models/$1.php\');
+	    			$$1 = new $1($this->osimo);
+	    		?>',
+	    		'<? $this->osimo->theme->include_file("$1"); ?>',
+	    		'<? $$1->$2($3); ?>'
+	    	)
+	    	,$html);
+	    
+	    return $html;
 	}
 }
 ?>

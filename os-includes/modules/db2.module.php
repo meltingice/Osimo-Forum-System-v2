@@ -32,8 +32,8 @@ class OsimoDB extends OsimoModule{
 	
 	public function connect(){
 		if(!$this->conn){
-			$this->conn = @mysql_connect($this->db_host, $this->db_user, $this->db_pass) or $this->error("Could not connect to database!",'crit');
-			$this->conn_db = @mysql_select_db($this->db_name)or $this->error("Could not select database!",'crit');
+			$this->conn = @mysql_connect($this->db_host, $this->db_user, $this->db_pass) or die("Could not connect to database!");
+			$this->conn_db = @mysql_select_db($this->db_name)or die("Could not select database!");
 		}
 	}
 	
@@ -72,6 +72,10 @@ class OsimoDB extends OsimoModule{
 	public function insert($args){
 		return new OsimoDBQuery('insert',$args);
 	}
+	
+	public function query($query){
+		return new OsimoDBQuery('query',$query);
+	}
 }
 
 class OsimoDBQuery{
@@ -106,6 +110,10 @@ class OsimoDBQuery{
 		elseif(!is_array($args) && is_string($args)){
 			if($this->type == 'select' || $this->type == 'delete'){
 				$this->fields = $this->trimData(explode(',',$args));
+			}
+			elseif($this->type == 'query'){
+				$this->fields = NULL;
+				$this->query = $args;
 			}
 			else{
 				$this->tables = $this->trimData(explode(',',$args));
@@ -154,6 +162,19 @@ class OsimoDBQuery{
 	}
 	
 	/*
+	 * Returns a single value/cell from a mysql table
+	 * Return is *not* an array
+	 */
+	public function cell($query){
+		$result = $this->query();
+		if($result && mysql_num_rows($result)>0){
+			return reset(mysql_fetch_row($result));
+		}
+		
+		return false;
+	}
+	
+	/*
 	 * Returns a single row from a mysql table
 	 * Return example:
 	 * Array(
@@ -165,19 +186,6 @@ class OsimoDBQuery{
 		$result = $this->query();
 		if($result && mysql_num_rows($result)>0){
 			return mysql_fetch_assoc($result);
-		}
-		
-		return false;
-	}
-	
-	/*
-	 * Returns a single value/cell from a mysql table
-	 * Return is *not* an array
-	 */
-	public function cell($query){
-		$result = $this->query();
-		if($result && mysql_num_rows($result)>0){
-			return reset(mysql_fetch_row($result));
 		}
 		
 		return false;
@@ -211,12 +219,24 @@ class OsimoDBQuery{
 		return false;
 	}
 	
+	public function insert(&$insertID){
+		$result = $this->query();
+		if($result && mysql_num_rows($result)>0){
+			$insertID = mysql_insert_id();
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public function query($run=true){
 		if(!$this->queryValidator()){
 			return NULL;
 		}
 		
-		$this->queryBuilder();
+		if($this->type != 'query'){
+			$this->queryBuilder();
+		}
 		
 		if($run){
 			return mysql_query($this->query);
@@ -259,6 +279,7 @@ class OsimoDBQuery{
 	}
 	
 	private function queryValidator(){
+		if($this->type == 'query'){ return true; }
 		if($this->type == 'select'){
 			if(!$this->fields || empty($this->fields)){
 				trigger_error("OsimoDB: Missing fields for SELECT statement",E_USER_ERROR);

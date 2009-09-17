@@ -2,8 +2,8 @@
 class OsimoModel{
 	public $osimo;
 	
-	function OsimoModel($osimo){
-		$this->osimo = $osimo;
+	function OsimoModel(){
+		$this->osimo = get('osimo');
 	}
 }
 ?>

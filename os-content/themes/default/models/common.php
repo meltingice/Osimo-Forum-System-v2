@@ -1,11 +1,11 @@
 <?
 class Common extends OsimoModel{
-	function Common($osimo){
-		parent::OsimoModel($osimo);
+	function Common(){
+		parent::OsimoModel();
 	}
 	
-	public function header($title){
-		$this->osimo->theme->setTitle($title);
+	public function header(){
+		$this->osimo->theme->autoTitle();
 		$this->osimo->theme->get_header(true);
 	}
 }

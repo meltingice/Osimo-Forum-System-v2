@@ -1,6 +1,6 @@
 <?
 class Osimo{
-	public $user;
+	public $user,$config;
 	public $db,$cache,$paths,$theme,$debug;
 	private $defaults,$allowOptMod;
 	private $cacheOptions,$dbOptions,$debugOptions,$themeOptions;
@@ -58,6 +58,8 @@ class Osimo{
 		$this->db->osimo = $this;
 		$this->theme = new OsimoTheme($this->themeOptions);
 		$this->theme->osimo = $this;
+		
+		$this->loadConfig();
 	}
 	
 	private function parseOptions($options){
@@ -74,6 +76,48 @@ class Osimo{
 		}
 	}
 	
+	private function loadConfig(){
+		if(!isset($_SESSION['config'])){
+			$data = $this->db->select('*')->from('config')->rows();
+			$_SESSION['config'] = $data;
+		}
+		else{
+			$data = $_SESSION['config'];
+		}
+		
+		foreach($data as $conf){
+			$this->config[$conf['name']] = $conf['value'];
+		}
+		
+		define('OS_SITE_TITLE',$this->config['site_title']);
+	}
+	
+	public function requireGET($id,$numeric=false,$redirect=true){
+		if(!isset($_GET[$id])){
+			if($this->theme->page_type == 'index' || !$redirect){
+				$this->debug->error("OsimoCore: missing parameter '$id'",true);
+				return false;
+			}
+			
+			header('Location: index.php');
+			return false;
+		}
+		else{
+			if($numeric && !is_numeric($_GET[$id])){
+				if($redirect){
+					header('Location: index.php');
+				}
+				else{
+					$this->debug->error("OsimoCore: invalid parameter '$id'",true);
+				}
+				
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	public function options($module){
 		if(!$module || empty($module)){ $module = 'osimo'; }
 		$optName = $module.'Options';
@@ -84,5 +128,20 @@ class Osimo{
 			}
 		}
 	}
+}
+
+function get($class){
+	global $osimo;
+	if(isset($osimo) && is_object($osimo)){
+		if($class=='osimo'){
+			return $osimo;
+		}
+		
+		if(is_object($osimo->$class)){
+			return $osimo->$class;
+		}
+	}
+	
+	return false;
 }
 ?>
