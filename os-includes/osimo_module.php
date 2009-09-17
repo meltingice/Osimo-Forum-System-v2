@@ -4,7 +4,7 @@ class OsimoModule{
 	public $osimo;
 	
 	function OsimoModule(){
-
+		$this->osimo = get("osimo");
 	}
 	
 	public function options($option){

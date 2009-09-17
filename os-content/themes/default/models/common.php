@@ -10,5 +10,9 @@ class Common extends OsimoModel{
 		$this->osimo->theme->autoTitle();
 		$this->osimo->theme->get_header(true);
 	}
+	
+	public function test($id){
+		echo "Number given is: $id";
+	}
 }
 ?>

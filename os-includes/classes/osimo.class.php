@@ -32,28 +32,10 @@ class Osimo{
 		$this->init();
 	}
 	
-	public static function loadIncludes($siteFolder){
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/osimo_module.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/classes/osimomodel.class.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/debug.module.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/paths.module.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/db2.module.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/cache.module.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/theme.module.php');
-	}
-	
 	private function init(){
-		if(isset($_SESSION['user']['id'])){
-			$this->user = $_SESSION['user'];
-		}
-		else{
-			$this->user = false;
-		}
-		
+		$this->user = new OsimoUser();
 		$this->debug = new OsimoDebug($this->debugOptions);
-		$this->debug->osimo = $this;
 		$this->cache = new OsimoCache($this->cacheOptions);
-		$this->cache->osimo = $this;
 		$this->db = new OsimoDB($this->dbOptions);
 		$this->db->osimo = $this;
 		$this->theme = new OsimoTheme($this->themeOptions);
@@ -127,6 +109,17 @@ class Osimo{
 				$this->$module->options($args[$i]);
 			}
 		}
+	}
+	
+	public static function loadIncludes($siteFolder){
+		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/osimo_module.php');
+		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/classes/user.class.php');
+		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/classes/osimomodel.class.php');
+		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/debug.module.php');
+		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/paths.module.php');
+		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/db2.module.php');
+		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/cache.module.php');
+		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/theme.module.php');
 	}
 }
 

@@ -7,6 +7,7 @@ class OsimoTheme extends OsimoModule{
 	public $classes;
 	
 	function OsimoTheme($options=false){
+		parent::OsimoModule();
 		$this->defaults = array(
 			"theme"=>"default",
 			"title"=>"Osimo Forum System"
@@ -172,7 +173,9 @@ class OsimoTheme extends OsimoModule{
 	    		"/\{include ([^}]*)\}/i",
 	    		"/\{func ([A-Za-z_]*)->([^}]*)\(([^\)]*)\)\}/i",
 	    		"/\{echo ([A-Za-z_]*)->([A-Za-z_]*)\}/i",
-	    		"/\{var ([A-Za-z_]*)->([A-Za-z_]*)\}/i"
+	    		"/\{var ([A-Za-z_]*)->([A-Za-z_]*)\}/i",
+	    		"/\{echo (db|cache|paths|theme|debug|user)\.([A-Za-z_]+)\}/i",
+	    		"/\{var (db|cache|paths|theme|debug|user)\.([A-Za-z_]+)\}/i"
 	    	),
 	    	array(
 	    		"<? 
@@ -182,7 +185,9 @@ class OsimoTheme extends OsimoModule{
 	    		'<? get("theme")->include_file("$1"); ?>',
 	    		'<? get("theme")->classes["$1"]->$2($3); ?>',
 	    		'<? echo get("theme")->classes["$1"]->$2; ?>',
-	    		'get("theme")->classes["$1"]->$2'
+	    		'get("theme")->classes["$1"]->$2',
+	    		'<? echo get("$1")->$2; ?>',
+	    		'get("$1")->$2'
 	    	)
 	    	,$html);
 	    

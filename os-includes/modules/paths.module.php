@@ -5,6 +5,7 @@ class OsimoPaths extends OsimoModule{
 	private $siteURL;
 	
 	public function OsimoPaths($siteFolder){
+		parent::OsimoModule();
 		$this->siteFolder = $this->parseFolderPath($siteFolder);
 
 		$this->siteRoot = $_SERVER['DOCUMENT_ROOT'].$this->siteFolder;

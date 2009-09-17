@@ -9,6 +9,7 @@ class OsimoCache extends OsimoModule{
 	protected $debug;
 	
 	function OsimoCache($options=false){
+		parent::OsimoModule();
 		$this->defaults = array(
 			'prefix'=>'',
 			'cache_addr'=>'localhost',

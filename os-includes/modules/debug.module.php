@@ -10,6 +10,7 @@ class OsimoDebug extends OsimoModule{
 	private $error_backtrace;
 	
 	function OsimoDebug($options=false){
+		parent::OsimoModule();
 		$this->defaults = array(
 			'debugLevel'=>0
 		);

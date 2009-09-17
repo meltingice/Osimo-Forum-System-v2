@@ -11,6 +11,7 @@ class OsimoDB extends OsimoModule{
 	protected $error_type;
 	
 	public function OsimoDB($options=false){
+		parent::OsimoModule();
 		$this->defaults = array(
 			'db_host'=>'localhost',
 			'db_user'=>'root',
