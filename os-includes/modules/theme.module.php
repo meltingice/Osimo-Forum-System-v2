@@ -173,7 +173,7 @@ class OsimoTheme extends OsimoModule{
 	    	array(
 	    		"<? 
 	    			include_once('".$this->theme_path.'models/$1.php\');
-	    			$$1 = new $1($this->osimo);
+	    			$$1 = new $1();
 	    		?>',
 	    		'<? $this->osimo->theme->include_file("$1"); ?>',
 	    		'<? $$1->$2($3); ?>'
