@@ -4,6 +4,7 @@ class OsimoTheme extends OsimoModule{
 	protected $theme,$title;
 	private $theme_path,$cache_file,$view;
 	private $css,$js;
+	public $classes;
 	
 	function OsimoTheme($options=false){
 		$this->defaults = array(
@@ -107,6 +108,7 @@ class OsimoTheme extends OsimoModule{
 		$this->cache_file = $this->theme_path."cache/$file.inc.php";
 		if($this->validate_cache()){
 			include($this->cache_file);
+			return true;
 		}
 	}
 	
@@ -168,15 +170,19 @@ class OsimoTheme extends OsimoModule{
 	    	array(
 	    		"/\{using ([^}]*)\}/i",
 	    		"/\{include ([^}]*)\}/i",
-	    		"/\{func ([A-Za-z_]*)->([^}]*)\(([^\)]*)\)\}/i"
+	    		"/\{func ([A-Za-z_]*)->([^}]*)\(([^\)]*)\)\}/i",
+	    		"/\{echo ([A-Za-z_]*)->([A-Za-z_]*)\}/i",
+	    		"/\{var ([A-Za-z_]*)->([A-Za-z_]*)\}/i"
 	    	),
 	    	array(
 	    		"<? 
 	    			include_once('".$this->theme_path.'models/$1.php\');
-	    			$$1 = new $1();
+	    			get("theme")->classes["$1"] = new $1();
 	    		?>',
-	    		'<? $this->osimo->theme->include_file("$1"); ?>',
-	    		'<? $$1->$2($3); ?>'
+	    		'<? get("theme")->include_file("$1"); ?>',
+	    		'<? get("theme")->classes["$1"]->$2($3); ?>',
+	    		'<? echo get("theme")->classes["$1"]->$2; ?>',
+	    		'get("theme")->classes["$1"]->$2'
 	    	)
 	    	,$html);
 	    

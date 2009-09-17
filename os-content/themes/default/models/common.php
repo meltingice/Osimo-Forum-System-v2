@@ -1,5 +1,7 @@
 <?
 class Common extends OsimoModel{
+	public $five = 5;
+	
 	function Common(){
 		parent::OsimoModel();
 	}
