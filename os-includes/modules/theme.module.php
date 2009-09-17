@@ -169,11 +169,11 @@ class OsimoTheme extends OsimoModule{
 	private function parse_view($html){
 	    $html = preg_replace(
 	    	array(
-	    		"/\{using ([^}]*)\}/i",
-	    		"/\{include ([^}]*)\}/i",
-	    		"/\{func ([A-Za-z_]*)->([^}]*)\(([^\)]*)\)\}/i",
-	    		"/\{echo ([A-Za-z_]*)->([A-Za-z_]*)\}/i",
-	    		"/\{var ([A-Za-z_]*)->([A-Za-z_]*)\}/i",
+	    		"/\{using ([^}]+)\}/i",
+	    		"/\{include ([^}]+)\}/i",
+	    		"/\{func ([A-Za-z_]+)->([^}]+)\(([^\)]*)\)\}/i",
+	    		"/\{echo ([A-Za-z_]+)->([A-Za-z_]+)\}/i",
+	    		"/\{var ([A-Za-z_]+)->([A-Za-z_]+)\}/i",
 	    		"/\{echo (db|cache|paths|theme|debug|user)\.([A-Za-z_]+)\}/i",
 	    		"/\{var (db|cache|paths|theme|debug|user)\.([A-Za-z_]+)\}/i"
 	    	),
