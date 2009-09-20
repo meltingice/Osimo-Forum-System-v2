@@ -1,0 +1,4 @@
+Options +FollowSymLinks
+RewriteEngine On
+
+RewriteRule ([A-Za-z0-9_]+)/([0-9]+) $1.php?id=$2 [L,NC]
