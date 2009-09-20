@@ -1,14 +1,18 @@
 <?
-class Forum extends OsimoModule{
+class Forum extends OsimoModel{
 	public $id;
 	
 	function Forum(){
-		parent::OsimoModule();
+		parent::OsimoModel();
 		$this->id = $_GET['id'];
 	}
 	
+	public function title(){
+		echo get("osimo")->forum()->title;
+	}
+	
 	public function dump(){
-		print_r(get('db')->select('*')->from('forum')->where('id=%d',$this->id)->row());
+		print_r(get("osimo")->forum());
 	}
 }
 ?>

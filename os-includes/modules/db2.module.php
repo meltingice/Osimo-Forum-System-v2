@@ -41,6 +41,8 @@ class OsimoDB extends OsimoModule{
 	/*
 	 * General escape function
 	 * If given an array, will escape every value in the array
+	 * The quotes option will put quotes around each item, useful
+	 * for the WHERE clause.
 	 */
 	public static function escape($data,$quotes=false){
 		if(is_array($data)){
@@ -56,7 +58,7 @@ class OsimoDB extends OsimoModule{
 			return $data;
 		}
 		else{
-			if($quotes && !is_numeric($data[$key])){
+			if($quotes && !is_numeric($data)){
 				return "'".mysql_real_escape_string($data)."'";
 			}
 			else{
@@ -270,13 +272,17 @@ class OsimoDBQuery{
 	}
 	
 	private function parseWhere(){
-		return call_user_func_array(
-			'sprintf',
-			array_merge(
-				(array) $this->where['str'],
-				OsimoDB::escape($this->where['vars'],true)
-			)
-		);
+		if(isset($this->where['vars'])){
+			return call_user_func_array(
+				'sprintf',
+				array_merge(
+					(array) $this->where['str'],
+					OsimoDB::escape($this->where['vars'],true)
+				)
+			);
+		}
+		
+		return $this->where['str'];
 	}
 	
 	private function queryValidator(){

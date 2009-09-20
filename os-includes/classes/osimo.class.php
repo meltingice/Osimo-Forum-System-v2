@@ -113,6 +113,7 @@ class Osimo{
 	
 	public static function loadIncludes($siteFolder){
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/osimo_module.php');
+		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/osimo_dynamic.php');
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/classes/user.class.php');
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/classes/osimomodel.class.php');
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/debug.module.php');
@@ -120,6 +121,31 @@ class Osimo{
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/db2.module.php');
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/cache.module.php');
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/theme.module.php');
+	}
+	
+	/* Dynamicly loaded objects */
+	public function forum($args=false){
+		if(!isset($args['id']) || !is_numeric($args['id'])){
+			$args['id'] = $_GET['id'];
+		}
+		
+		return $this->initDynamicObj($args,'OsimoForum','forum','forum');
+	}
+	
+	private function initDynamicObj($args,$Class,$var,$file){
+		if(!class_exists($Class) && file_exists(ABS_INC_CLASSES.$file.'.class.php')){
+			include_once(ABS_INC_CLASSES.$file.'.class.php');
+		}
+		else{
+			$this->debug->error("OsimoCore: unable to locate class file '$file.class.php'",true);
+			return false;
+		}
+		
+		if(!isset($this->$var) || !is_object($this->var)){
+			$this->$var = new $Class($args);
+		}
+		
+		return $this->$var;
 	}
 }
 
