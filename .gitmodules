@@ -1,0 +1,3 @@
+[submodule "osimo_editor"]
+	path = os-includes/js/osimo_editor
+	url = git://github.com/meltingice/Osimo-BBCode-Editor.git
