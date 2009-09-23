@@ -31,7 +31,15 @@ class OsimoTheme extends OsimoModule{
 	}
 	
 	public function setTitle($title){
-		$this->title = $title.' - Powered by Osimo';
+		$this->title = $title;
+	}
+	
+	public function getTitle(){
+		if(!isset($this->title)){
+			$this->autoTitle();
+		}
+		
+		return $this->title;
 	}
 	
 	public function autoTitle(){
@@ -56,7 +64,7 @@ class OsimoTheme extends OsimoModule{
 	}
 	
 	public function get_header($echo = true){
-		$html = "<title>".$this->title."</title>\n";
+		$html = "<title>".$this->title." - Powered by Osimo</title>\n";
 		foreach($this->js as $js){
 			$html .= "<script src=\"".$js."\"></script>\n";
 		}
@@ -178,7 +186,11 @@ class OsimoTheme extends OsimoModule{
 	    		"/\{echo ([A-Za-z_]+)->([A-Za-z_]+)\}/i",
 	    		"/\{var ([A-Za-z_]+)->([A-Za-z_]+)\}/i",
 	    		"/\{echo (db|cache|paths|theme|debug|user)\.([A-Za-z_]+)\}/i",
-	    		"/\{var (db|cache|paths|theme|debug|user)\.([A-Za-z_]+)\}/i"
+	    		"/\{var (db|cache|paths|theme|debug|user)\.([A-Za-z_]+)\}/i",
+	    		"/\{echo (db|cache|paths|theme|debug|user)\.([A-Za-z_]+)\(([^\)]*)\)}/i",
+	    		"/\{var (db|cache|paths|theme|debug|user)\.([A-Za-z_]+)\(([^\)]*)\)}/i",
+	    		"/\{echo_const ([A-Za-z_]+)}/i",
+	    		"/\{const ([A-Za-z_]+)}/i"
 	    	),
 	    	array(
 	    		"<? 
@@ -190,7 +202,11 @@ class OsimoTheme extends OsimoModule{
 	    		'<? echo get("theme")->classes["$1"]->$2; ?>',
 	    		'get("theme")->classes["$1"]->$2',
 	    		'<? echo get("$1")->$2; ?>',
-	    		'get("$1")->$2'
+	    		'get("$1")->$2',
+	    		'<? echo get("$1")->$2($3); ?>',
+	    		'get("$1")->$2($3)',
+	    		'<? if(defined("$1")){ echo $1; } ?>',
+	    		'$1'
 	    	)
 	    	,$html);
 	    
