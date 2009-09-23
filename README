@@ -1,0 +1,61 @@
+Open-source forum system written in PHP, Javascript, HTML and CSS using MySQL as the database.
+
+<a href="http://getosimo.com">Project Homepage</a>
+
+<h1>About the Project</h1>
+This is the second generation of the Osimo Forum System, which is a complete rewrite of the first.  I wanted to fix a lot of problems, restructure a lot of the code, and change the way that things were done to make the system easier to use and modify, and to make it much more flexible.  The first-generation of Osimo was barely object-oriented and the code was well... chaotic to say the least.  It is currently in use at <a href="http://unifaction.com">UniFaction</a> and is serving them well, but it is hard to extend if you are unfamiliar with the entirety of Osimo's source code (which you can find <a href="http://code.google.com/p/osimo">here</a> by the way).
+
+This version of Osimo takes advantage of object-oriented designed code and aims to make it much easier to develop themes for the front-end web developers out there who aren't as skilled in the ways of back-end code development (everyone enjoys cleaner code too).  It will continue to promote many "web 2.0 standards", but will do so in a much more orderly, consistent, and reliable manner through a cleanly defined Javascript API.
+
+Instead of intermixing PHP and HTML in a single file for theme code, this version of Osimo has a new template engine that parses HTML files to look for special template directives, which it then converts to PHP code and stores in a cache.  The cache is only updated when the template files are updated.
+
+This version of Osimo also has Memcache support from the start, and it will be getting other types of caches added as well in the future to improve performance for those who don't have the amazing Memcache system available to them.
+
+The installation and upgrading process will be much easier and much more streamlined.  Something I would like to attempt is automatic updates through an admin panel instead of having to manually download a ZIP file, connect to FTP, upload it to the web server, etc.
+
+Last, but certainly not least, Osimo's new home is on GitHub.  After wrangling with SVN for awhile, I finally discovered the greatness that is Git and I have become a fan.  I'm sure any future projects of mine will also be hosted on GitHub.
+
+<h1>Theming System</h1>
+Osimo uses a template engine that supports the model-view-controller (MVC) framework to make your life easier, and to promote ease of modification in the world of open-source software.  There are a few template directives that the system understands right now.  Please keep in mind that this software is still under heavy development, and these directives could change at any time.
+
+The theming system requires a certain folder layout in order to function.  It has some flexibility, but there are a few requirements (mostly to satisfy the MVC framework and to promote consistency across themes).
+
+<h2>Theme Folder Structure</h2>
+* os-content/themes
+** theme_name
+*** includes
+**** header.html (optional example)
+*** models
+**** common.php (optional example)
+*** views (everything in this folder is NOT optional)
+**** index.html 
+**** forum.html
+**** thread.html
+**** user.html
+**** more files to come, currently in development...
+*** css (optional)
+*** js (optional)
+
+
+<h2>Template Directives</h2>
+* {using filename}
+** Translates to: <? include_once('".$this->theme_path.'models/filename.php\'); get("theme")->classes["filename"] = new filename(); ?>
+** Includes a PHP file from the models folder and instantiates the class within it.
+* {include filename}
+** Translates to: <? get("theme")->include_file("$1"); ?>
+** Parses a HTML file with the template engine in the includes folder, and includes the resulting PHP file. Useful for including common headers and footers.
+* {func modelname->funcname([vars])}
+** Translates to: <? get("theme")->classes["modelname"]->funcname([vars]); ?>
+** Executes a function in an included model.
+* {echo modelname->varname}
+** Translates to: <? echo get("theme")->classes["$1"]->$2; ?>
+** Echoes the value of a class variable in an included model.
+* {var modelname->varname}
+** Translates to: get("theme")->classes["$1"]->$2
+** Used mainly for passing variables to functions, but I'm sure there's other applications. Variable's contents are returned, not echoed.
+* {echo module.var}
+** Translates to: <? echo get("$1")->$2; ?>
+** Echoes the contents of an Osimo module, as long as its in the public scope.
+* {var module.var}
+** Translates to: get("$1")->$2
+** Also used mainly for passing variables to functions

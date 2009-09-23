@@ -25,6 +25,7 @@ class OsimoPaths extends OsimoModule{
 		
 		/* Define relative paths */
 		define('SITE_URL',$this->siteURL);
+		define('URL_THEMES',SITE_URL.'os-content/themes/');
 	}
 	
 	private function parseFolderPath($folder,$s_slash=true,$e_slash=true){

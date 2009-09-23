@@ -22,9 +22,12 @@ class OsimoTheme extends OsimoModule{
 		$this->js = array();
 		
 		$this->theme_path = ABS_THEMES.$this->theme.'/';
+		define('ABS_THEME',$this->theme_path);
+		define('URL_THEME',URL_THEMES.$this->theme.'/');
 		
 		$this->addJavascript(SITE_URL.'os-includes/js/jquery.js');
 		$this->addJavascript(SITE_URL.'os-includes/js/jquery-ui.js');
+		$this->addJavascript(SITE_URL.'os_includes/js/osimo_editor/osimo_editor.js');
 	}
 	
 	public function setTitle($title){
