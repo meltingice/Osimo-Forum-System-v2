@@ -2,6 +2,8 @@ Open-source forum system written in PHP, Javascript, HTML and CSS using MySQL as
 
 <a href="http://getosimo.com">Project Homepage</a>
 
+Please see LICENSE file for license information.
+
 <h1>About the Project</h1>
 This is the second generation of the Osimo Forum System, which is a complete rewrite of the first.  I wanted to fix a lot of problems, restructure a lot of the code, and change the way that things were done to make the system easier to use and modify, and to make it much more flexible.  The first-generation of Osimo was barely object-oriented and the code was well... chaotic to say the least.  It is currently in use at <a href="http://unifaction.com">UniFaction</a> and is serving them well, but it is hard to extend if you are unfamiliar with the entirety of Osimo's source code (which you can find <a href="http://code.google.com/p/osimo">here</a> by the way).
 
