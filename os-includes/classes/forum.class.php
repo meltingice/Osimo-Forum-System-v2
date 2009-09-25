@@ -18,7 +18,7 @@ class OsimoForum extends OsimoDynamic{
 	}
 	
 	private function loadData(){
-		$data = get('db')->select('*')->from('forum')->where($this->buildWhere())->row();
+		$data = get('db')->select('*')->from('forums')->where($this->buildWhere())->row();
 		foreach($data as $key=>$val){
 			$this->$key = $val;
 		}
