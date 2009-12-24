@@ -168,7 +168,11 @@ class OsimoDBQuery{
 	 * Returns a single value/cell from a mysql table
 	 * Return is *not* an array
 	 */
-	public function cell($query){
+	public function cell($cache=false,$cache_length=300){
+		if($cache){
+			return get('cache')->sqlquery($this->query(false),$cache_length);
+		}
+		
 		$result = $this->query();
 		if($result && mysql_num_rows($result)>0){
 			return reset(mysql_fetch_row($result));
@@ -185,7 +189,11 @@ class OsimoDBQuery{
 	 *	username => "user"
 	 * )
 	 */
-	public function row(){
+	public function row($cache=false,$cache_length=300){
+		if($cache){
+			return get('cache')->sqlquery($this->query(false),$cache_length);
+		}
+		
 		$result = $this->query();
 		if($result && mysql_num_rows($result)>0){
 			return mysql_fetch_assoc($result);
@@ -208,7 +216,11 @@ class OsimoDBQuery{
 	 *		)
 	 *	)
 	 */
-	public function rows(){
+	public function rows($cache=false,$cache_length=300){
+		if($cache){
+			return get('cache')->sqlquery($this->query(false),$cache_length);
+		}
+		
 		$result = $this->query();
 		if($result && mysql_num_rows($result)>0){
 			$return = array();
@@ -232,13 +244,17 @@ class OsimoDBQuery{
 		return false;
 	}
 	
-	public function query($run=true){
+	public function query($run=true,$cache=false,$cache_length=300){
 		if(!$this->queryValidator()){
 			return NULL;
 		}
 		
 		if($this->type != 'query'){
 			$this->queryBuilder();
+		}
+		
+		if($run && $cache){
+			return get('cache')->sqlquery($this->query,$cache_length);
 		}
 		
 		if($run){

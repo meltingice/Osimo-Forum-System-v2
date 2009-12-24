@@ -1,7 +1,7 @@
 <?
 class Osimo{
 	public $user,$config;
-	public $db,$cache,$paths,$theme,$debug;
+	public $db,$cache,$paths,$theme,$debug,$bbparser;
 	private $defaults,$allowOptMod;
 	private $cacheOptions,$dbOptions,$debugOptions,$themeOptions;
 	
@@ -32,14 +32,16 @@ class Osimo{
 		$this->init();
 	}
 	
-	private function init(){
-		$this->user = new OsimoUser();
-		$this->debug = new OsimoDebug($this->debugOptions);
+	public function init(){
 		$this->cache = new OsimoCache($this->cacheOptions);
 		$this->db = new OsimoDB($this->dbOptions);
 		$this->db->osimo = $this;
+		$this->user = new OsimoUser();
+		$this->debug = new OsimoDebug($this->debugOptions);
 		$this->theme = new OsimoTheme($this->themeOptions);
+		$this->data = new OsimoData();
 		$this->theme->osimo = $this;
+		$this->bbparser = new OsimoBBParser();
 		
 		$this->loadConfig();
 	}
@@ -60,7 +62,7 @@ class Osimo{
 	
 	private function loadConfig(){
 		if(!isset($_SESSION['config'])){
-			$data = $this->db->select('*')->from('config')->rows();
+			$data = $this->db->select('*')->from('config')->rows(true,300);
 			$_SESSION['config'] = $data;
 		}
 		else{
@@ -72,12 +74,13 @@ class Osimo{
 		}
 		
 		define('OS_SITE_TITLE',$this->config['site_title']);
+		define('OS_SITE_DESC',$this->config['site_description']);
 	}
 	
 	public function requireGET($id,$numeric=false,$redirect=true){
 		if(!isset($_GET[$id])){
 			if($this->theme->page_type == 'index' || !$redirect){
-				$this->debug->error("OsimoCore: missing parameter '$id'",true);
+				$this->debug->error("OsimoCore: missing parameter '$id'",__LINE__,__FUNCTION__,__FILE__,true);
 				return false;
 			}
 			
@@ -90,7 +93,7 @@ class Osimo{
 					header('Location: index.php');
 				}
 				else{
-					$this->debug->error("OsimoCore: invalid parameter '$id'",true);
+					$this->debug->error("OsimoCore: invalid parameter '$id'",__LINE__,__FUNCTION__,__FILE__,true);
 				}
 				
 				return false;
@@ -116,28 +119,30 @@ class Osimo{
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/osimo_dynamic.php');
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/classes/user.class.php');
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/classes/osimomodel.class.php');
+		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/classes/bbparser.class.php');
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/debug.module.php');
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/paths.module.php');
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/db2.module.php');
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/cache.module.php');
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/theme.module.php');
+		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/data.module.php');
 	}
 	
 	/* Dynamicly loaded objects */
 	public function forum($args=false){
-		if(!isset($args['id']) || !is_numeric($args['id'])){
-			$args['id'] = $_GET['id'];
-		}
-		
 		return $this->initDynamicObj($args,'OsimoForum','forum','forum');
 	}
 	
+	public function category($args=false){
+		return $this->initDynamicObj($args,'OsimoCategory','category','category');
+	}
+	
 	private function initDynamicObj($args,$Class,$var,$file){
-		if(!class_exists($Class) && file_exists(ABS_INC_CLASSES.$file.'.class.php')){
+		if(!isset($this->$var) && !class_exists($Class) && file_exists(ABS_INC_CLASSES.$file.'.class.php')){
 			include_once(ABS_INC_CLASSES.$file.'.class.php');
 		}
 		else{
-			$this->debug->error("OsimoCore: unable to locate class file '$file.class.php'",true);
+			$this->debug->error("OsimoCore: unable to locate class file '$file.class.php'",__LINE__,__FUNCTION__,__FILE__,true);
 			return false;
 		}
 		
@@ -147,10 +152,39 @@ class Osimo{
 		
 		return $this->$var;
 	}
+	
+	public static function validateOQLArgs($args,$allowed,$escape=false){
+		$data = explode('&',$args);
+		$final = array();
+		foreach($data as $arg){
+			$temp = explode('=',$arg);
+			if(array_key_exists($temp[0],$allowed)){
+				if(
+					$allowed[$temp[0]] == 'any' || 
+					($allowed[$temp[0]] == 'numeric' && is_numeric($temp[1])) || 
+					($allowed[$temp[0]] == 'string' && is_string($temp[1]))
+				  )
+				{
+					if($escape){
+						$temp[1] = get('db')->escape($temp[1],true);
+					}
+				  	else{
+				  		$temp[1] = "'".$temp[1]."'";
+				  	}
+					
+					$final[] = $temp[0].'='.$temp[1];
+				}
+			}
+		}
+		
+		return $final;
+	}
 }
 
+/* Singleton class retriever */
 function get($class){
 	global $osimo;
+
 	if(isset($osimo) && is_object($osimo)){
 		if($class=='osimo'){
 			return $osimo;

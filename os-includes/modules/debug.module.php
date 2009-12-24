@@ -45,7 +45,8 @@ class OsimoDebug extends OsimoModule{
 		$this->msgs[] = $msg;
 	}
 	
-	public function error($msg,$fatal=false){
+	public function error($msg,$line,$function,$file,$fatal=false){
+		$msg .= " in $file::$function(), line $line";
 		$fatal ? trigger_error($msg,E_USER_ERROR) : trigger_error($msg);
 	}
 	

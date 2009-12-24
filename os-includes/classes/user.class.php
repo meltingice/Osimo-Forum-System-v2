@@ -31,7 +31,7 @@ class OsimoUser{
 	}
 	
 	private function loadFromDB($id){
-		$user = get("db")->select('id,username,email,ip_address')->from('users')->where('id=%d',$id)->row();
+		$user = get("db")->select('id,username,email,ip_address')->from('users')->where('id=%d',$id)->row(true,300);
 		foreach($user as $key=>$val){
 			$this->$key = $val;
 		}

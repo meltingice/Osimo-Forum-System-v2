@@ -1,6 +1,7 @@
 <?
 class OsimoCache extends OsimoModule{
 	private $memcache;
+	protected $enabled;
 	protected $prefix;
 	protected $cache_addr;
 	protected $cache_port;
@@ -11,6 +12,7 @@ class OsimoCache extends OsimoModule{
 	function OsimoCache($options=false){
 		parent::OsimoModule();
 		$this->defaults = array(
+			'enabled'=>true,
 			'prefix'=>'',
 			'cache_addr'=>'localhost',
 			'cache_port'=>11211,
@@ -20,10 +22,15 @@ class OsimoCache extends OsimoModule{
 		
 		$this->parseOptions($options);
 		
+		if(!$this->enabled){
+			return true;
+		}
+		
 		if(class_exists('Memcache')){
 			$this->memcache = new Memcache;
 		}
 		else{
+			$this->enabled = false;
 			return false;
 		}
 		
@@ -66,6 +73,13 @@ class OsimoCache extends OsimoModule{
 	
 	public function sqlquery($query,$expire=false){
 		if($query==''){ return false; }
+		
+		/* If cache is disabled, go straight to DB */
+		if(!$this->enabled){
+			$db_result = $this->db_query($query,'assoc');
+			return $db_result;
+		}
+		
 		$type = $this->parseQuery($query,$sql_type);
 		if($cache_name = $this->queryTypeAllowed($type,$sql_type)){
 			$this->debugMsg("query allowed, attempting memcache");
@@ -118,7 +132,7 @@ class OsimoCache extends OsimoModule{
 			$posts = array();
 			foreach($dbresult as $post){
 				$post_id = $post['id'];
-				if(is_object($this->memcache)){
+				if($this->enabled && is_object($this->memcache)){
 					$tmp = $this->memcache->get($this->prefix."post_$post_id");
 				}
 				if($tmp){
@@ -152,7 +166,7 @@ class OsimoCache extends OsimoModule{
 		$user = $osimo->getLoggedInUser();
 		if(!$user){ return false; }
 		
-		if(is_object($this->memcache)){
+		if($this->enabled && is_object($this->memcache)){
 			$result = $this->memcache->get($this->prefix."post_$post_id");
 		}
 		
@@ -183,7 +197,7 @@ class OsimoCache extends OsimoModule{
 		$update .= implode(",",$query_opt);
 		$update .= " WHERE id='$post_id' LIMIT 1";
 		$db_result = $this->db_query($update);
-		if(is_object($this->memcache)){
+		if($this->enabled && is_object($this->memcache)){
 			$result = $this->cache("post_$post_id",$post);
 		}
 		
@@ -303,7 +317,13 @@ class OsimoCache extends OsimoModule{
 	}
 	
 	public function memcacheInfo(){
-		$serv_status = $this->memcache->getServerStatus($this->cache_addr,$this->cache_port);
+		if(is_array($this->cache_addr)){
+			$serv_status = $this->memcache->getServerStatus($this->cache_addr[0],$this->cache_port);
+		}
+		else{
+			$serv_status = $this->memcache->getServerStatus($this->cache_addr,$this->cache_port);
+		}
+		
 		?>
 		<style>
 			body{
