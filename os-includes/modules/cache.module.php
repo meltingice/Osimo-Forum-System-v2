@@ -22,28 +22,23 @@ class OsimoCache extends OsimoModule{
 		
 		$this->parseOptions($options);
 		
-		if(!$this->enabled){
-			return true;
-		}
-		
 		if(class_exists('Memcache')){
 			$this->memcache = new Memcache;
 		}
 		else{
 			$this->enabled = false;
-			return false;
 		}
 		
 		$this->init();
 	}
 	
 	private function init(){
-		if(is_array($this->cache_addr)){
+		if($this->enabled && is_array($this->cache_addr)){
 			foreach($this->cache_addr as $addr){
 				$this->memcache->addServer($addr, $this->cache_port);
 			}
 		}
-		else{
+		elseif($this->enabled){
 			$this->memcache->connect($this->cache_addr,$this->cache_port);
 		}
 		

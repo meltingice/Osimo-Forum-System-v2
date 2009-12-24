@@ -13,7 +13,7 @@
 
 <div id="navbar">
 	<ul>
-		<li><a href="#">Home</a></li>
+		<li><a href="index.php">Home</a></li>
 		<li><a href="#">My Profile</a></li>
 		<li><a href="#">Search</a></li>
 		<li><a href="#">Logout</a></li>

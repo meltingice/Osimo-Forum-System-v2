@@ -135,6 +135,15 @@ body{
     margin: 0;
 }
 
+.forum_list_desc h1>a{
+	color: #3E88D8;
+	text-decoration: none;
+}
+
+.forum_list_desc h1>a:hover{
+	text-decoration: underline;
+}
+
 .forum_list_desc p{
     margin: 0 0 0 1px;
     font-size: 14px;

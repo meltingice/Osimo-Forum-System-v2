@@ -154,6 +154,21 @@ class OsimoTheme extends OsimoModule{
 	}
 	
 	/* Utility Functions */
+	public function is_index(){
+		if($this->page_type == 'index'){ return true; }
+		return false;
+	}
+	
+	public function is_forum(){
+		if($this->page_type == 'forum'){ return true; }
+		return false;
+	}
+	
+	public function is_thread(){
+		if($this->page_type == 'thread'){ return true; }
+		return false;
+	}
+	
 	public function include_contents($filename){
 		$osimo = $this->osimo;
 

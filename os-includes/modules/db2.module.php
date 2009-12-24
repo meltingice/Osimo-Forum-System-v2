@@ -164,6 +164,15 @@ class OsimoDBQuery{
 		return $this;
 	}
 	
+	public function limit($start,$num=false){
+		$this->limit = $start;
+		if($num){
+			$this->limit .= ",$num";
+		}
+		
+		return $this;
+	}
+	
 	/*
 	 * Returns a single value/cell from a mysql table
 	 * Return is *not* an array
@@ -280,6 +289,11 @@ class OsimoDBQuery{
 			/* WHERE statement */
 			if(is_array($this->where)){
 				$query .= ' WHERE '.$this->parseWhere().' ';
+			}
+			
+			/* LIMIT statement */
+			if(isset($this->limit)){
+				$query .= ' LIMIT '.$this->limit;
 			}
 		}
 		

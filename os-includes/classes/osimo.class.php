@@ -4,6 +4,7 @@ class Osimo{
 	public $db,$cache,$paths,$theme,$debug,$bbparser;
 	private $defaults,$allowOptMod;
 	private $cacheOptions,$dbOptions,$debugOptions,$themeOptions;
+	public $GET;
 	
 	public function Osimo($options=false,$siteFolder=false){
 		if(!defined('SITE_FOLDER') && (!$siteFolder || empty($siteFolder))){
@@ -62,7 +63,7 @@ class Osimo{
 	
 	private function loadConfig(){
 		if(!isset($_SESSION['config'])){
-			$data = $this->db->select('*')->from('config')->rows(true,300);
+			$data = $this->db->select('*')->from('config')->rows();
 			$_SESSION['config'] = $data;
 		}
 		else{
@@ -100,6 +101,13 @@ class Osimo{
 			}
 		}
 		
+		if($numeric){
+			$this->GET[$id] = $_GET[$id];
+		}
+		else{
+			$this->GET[$id] = $this->db->escape($_GET[$id]);		
+		}
+
 		return true;
 	}
 	
@@ -178,6 +186,13 @@ class Osimo{
 		}
 		
 		return $final;
+	}
+	
+	public static function getPageLimits($page,$num){
+		return array(
+			"start"=>($page-1)*$num,
+			"num"=>$num
+		);
 	}
 }
 
