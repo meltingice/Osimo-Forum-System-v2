@@ -212,7 +212,7 @@ class OsimoBBParser{
 		}
 		
 		/* Handle smilies, will probably change later */
-		$content = $this->processSmilies($content);
+		//$content = $this->processSmilies($content);
 		
 		return $content;
 	}

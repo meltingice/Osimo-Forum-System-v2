@@ -22,10 +22,12 @@ class OsimoPaths extends OsimoModule{
 		define('ABS_INC_CLASSES',ABS_INC.'classes/');
 		define('ABS_INC_MODULES',ABS_INC.'modules/');
 		define('ABS_THEMES',ABS_ROOT.'os-content/themes/');
+		define('ABS_AVATARS',ABS_ROOT.'os-content/avatars/');
 		
 		/* Define relative paths */
 		define('SITE_URL',$this->siteURL);
 		define('URL_THEMES',SITE_URL.'os-content/themes/');
+		define('URL_AVATARS',SITE_URL.'os-content/avatars/');
 	}
 	
 	private function parseFolderPath($folder,$s_slash=true,$e_slash=true){

@@ -174,6 +174,44 @@ body{
     width: 300px;
 }
 
+.forum_post{
+        width: 900px;
+        overflow: hidden;
+        border: 1px #a49f95 solid;
+        margin: 10px 0 10px 0;
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+}
+
+.forum_post_user{
+        float: left;
+        width: 200px;
+        padding-left: 10px;
+        padding-top: 10px;
+}
+
+.forum_post_user p{
+        width: 190px;
+        margin: 0;
+}
+
+.forum_post_user a{
+        color: #3E88D8;
+        text-decoration: none;
+}
+
+.forum_post_user a:hover{
+        text-decoration: underline;
+}
+
+.forum_post_content{
+        float: left;
+        width: 670px;
+        min-height: 120px;
+        border-left: 1px #a49f95 solid;
+        padding: 5px;
+}
+
 #footer p{
 	text-align: center;
     font-size: 12px;

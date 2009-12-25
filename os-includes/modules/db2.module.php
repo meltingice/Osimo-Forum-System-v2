@@ -200,7 +200,7 @@ class OsimoDBQuery{
 	 */
 	public function row($cache=false,$cache_length=300){
 		if($cache){
-			return get('cache')->sqlquery($this->query(false),$cache_length);
+			return reset(get('cache')->sqlquery($this->query(false),$cache_length));
 		}
 		
 		$result = $this->query();
