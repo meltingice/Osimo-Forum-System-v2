@@ -76,6 +76,10 @@ class OsimoDB extends OsimoModule{
 		return new OsimoDBQuery('insert',$args);
 	}
 	
+	public function update($args){
+		return new OsimoDBQuery('update',$args);
+	}
+	
 	public function query($query){
 		return new OsimoDBQuery('query',$query);
 	}
@@ -105,6 +109,10 @@ class OsimoDBQuery{
 			elseif($this->type == 'delete'){
 				$this->fields = '';
 			}
+			elseif($this->type == 'update'){
+				trigger_error("OsimoDB: Missing table for DB UPDATE query",E_USER_ERROR);
+				return NULL;
+			}
 			else{
 				trigger_error("OsimoDB: Invalid start of SQL query - missing arguments",E_USER_ERROR);
 				return NULL;
@@ -118,6 +126,9 @@ class OsimoDBQuery{
 				$this->fields = NULL;
 				$this->query = $args;
 			}
+			elseif($this->type == 'update'){
+				$this->tables = $this->trimData(explode(',',$args));
+			}
 			else{
 				$this->tables = $this->trimData(explode(',',$args));
 			}
@@ -125,6 +136,9 @@ class OsimoDBQuery{
 		else{
 			if($this->type == 'select' || $this->type == 'delete'){
 				$this->fields = $args;
+			}
+			elseif($this->type == 'update'){
+				$this->tables = $args;
 			}
 			else{
 				$this->tables = $args;
@@ -145,6 +159,22 @@ class OsimoDBQuery{
 		}
 		else{
 			$this->tables = $tables;
+		}
+		
+		return $this;
+	}
+	
+	public function set($args){
+		if(is_array($args)){
+			$temp = array();
+			foreach($args as $field=>$val){
+				$temp[] = $field."='".$val."'";
+			}
+			
+			$this->fields = implode(",",$temp);
+		}
+		else{
+			$this->fields = $args;
 		}
 		
 		return $this;
@@ -253,6 +283,15 @@ class OsimoDBQuery{
 		return false;
 	}
 	
+	public function update(){
+		$result = $this->query();
+		if($result){
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public function query($run=true,$cache=false,$cache_length=300){
 		if(!$this->queryValidator()){
 			return NULL;
@@ -296,6 +335,25 @@ class OsimoDBQuery{
 				$query .= ' LIMIT '.$this->limit;
 			}
 		}
+		elseif($this->type == 'update'){
+			/* UPDATE tables */
+			$query = strtoupper($this->type) . ' ';
+			$query .= implode(",",$this->tables);
+			
+			/* SET fields */
+			$query .= ' SET ';
+			$query .= $this->fields;
+			
+			/* WHERE statement */
+			if(is_array($this->where)){
+				$query .= ' WHERE '.$this->parseWhere().' ';
+			}
+			
+			/* LIMIT statement */
+			if(isset($this->limit)){
+				$query .= ' LIMIT '.$this->limit;
+			}
+		}
 		
 		$this->query = $query;
 		return $this->query;
@@ -317,9 +375,9 @@ class OsimoDBQuery{
 	
 	private function queryValidator(){
 		if($this->type == 'query'){ return true; }
-		if($this->type == 'select'){
+		if($this->type == 'select' || $this->type == 'update'){
 			if(!$this->fields || empty($this->fields)){
-				trigger_error("OsimoDB: Missing fields for SELECT statement",E_USER_ERROR);
+				trigger_error("OsimoDB: Missing fields for query statement",E_USER_ERROR);
 				return false;
 			}
 		}
