@@ -212,6 +212,30 @@ body{
         padding: 5px;
 }
 
+#login_form{
+    text-align: center;
+}
+
+#login_form input{
+    margin-bottom: 15px;
+    font-size: 30px;
+    width: 300px;
+    color: #444444;
+    border: 1px #a49f95 solid;
+    padding: 5px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    font-family: Helvetica Neue, Helvetica, Verdana, sans-serif;
+}
+
+.login_label{
+    width: 300px;
+    margin: 0 auto 0 auto;
+    text-align: left !important;
+    padding-left: 10px;
+    color: #3E88D8;
+}
+
 #footer p{
 	text-align: center;
     font-size: 12px;

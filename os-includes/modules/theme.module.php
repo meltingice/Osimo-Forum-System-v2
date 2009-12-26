@@ -143,14 +143,15 @@ class OsimoTheme extends OsimoModule{
 		$page = strtolower(str_replace(" ","_",$page));
 		$types = array(
 			'index','forum',
-			'thread','profile'
+			'thread','profile',
+			'login'
 		);
 		
 		if(in_array($page,$types)){
 			$this->page_type = $page;
 		}
 		else{
-			$this->page_type = $other;
+			$this->page_type = 'other';
 		}
 	}
 	
@@ -168,6 +169,21 @@ class OsimoTheme extends OsimoModule{
 	public function is_thread(){
 		if($this->page_type == 'thread'){ return true; }
 		return false;
+	}
+	
+	public function login_username_css_id($echo=true){
+		$var = "osimo_username";
+		if($echo){ echo $var; } else { return $var; }
+	}
+	
+	public function login_password_css_id($echo=true){
+		$var = "osimo_password";
+		if($echo){ echo $var; } else { return $var; }
+	}
+	
+	public function login_action_url($echo=true){
+		$var = 'os-includes/login.php';
+		if($echo){ echo $var; } else { return $var; }
 	}
 	
 	public function include_contents($filename){
