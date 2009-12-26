@@ -39,6 +39,7 @@ class OsimoTheme extends OsimoModule{
 		}
 		
 		$this->auto_set_page_type($file);
+		get('user')->update_user_stats();
 		
 		$this->theme_file = $this->theme_path."/$file.php";
 		include($this->theme_file);

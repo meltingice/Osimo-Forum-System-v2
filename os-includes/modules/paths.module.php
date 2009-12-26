@@ -64,5 +64,10 @@ class OsimoPaths extends OsimoModule{
 			return $this->siteURL.$this->parseFolderPath($path,false,true);
 		}
 	}
+	
+	public function getCurrentPage(){
+		$temp = explode($this->siteFolder,$_SERVER['REQUEST_URI']);
+		return $temp[1];
+	}
 }
 ?>

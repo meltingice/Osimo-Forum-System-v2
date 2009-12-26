@@ -46,7 +46,7 @@ class OsimoUser{
 		$this->id = 0;
 		$this->username = 'Guest';
 		$this->email = false;
-		$this->is_guest = 1;
+		$this->is_guest = true;
 		$this->ip_address = $_SERVER['REMOTE_ADDR'];
 	}
 	
@@ -64,11 +64,38 @@ class OsimoUser{
 	}
 	
 	private function ip_check(){
+		if($this->is_guest){ return true; }
 		if($this->ip_address != $_SERVER['REMOTE_ADDR']){
-			//get('db')->update('users')->set()
+			get('db')->update('users')
+				->set(array('ip_address'=>$_SERVER['REMOTE_ADDR']))
+				->where('id=%d',$this->id)
+				->limit(1)
+			->update();
 		}
 		
 		return true;
+	}
+	
+	public function update_user_stats(){
+		if($this->is_guest){
+			return true;
+		}
+		
+		$last_page = get('paths')->getCurrentPage();
+		$last_visit = get('db')->formatDateForDB();
+		
+		$result = get('db')->update('users')
+			->set(array(
+				'last_page'=>$last_page,
+				'last_page_type'=>get('theme')->page_type,
+				'time_last_visit'=>$last_visit
+			))
+			->where('id=%d',$this->id)
+			->limit(1)
+		->update();
+		
+		if($result){ return true; }
+		return false;
 	}
 	
 	public function avatar(){

@@ -67,6 +67,12 @@ class OsimoDB extends OsimoModule{
 		}
 	}
 	
+	public static function formatDateForDB($date=false){
+		if(!$date){ $date = time(); }
+		elseif(!is_numeric($date)){ $date = strtotime($date); }
+		return date('Y-m-d H:i:s', $date);
+	}
+	
 	/* Now starts the tasty stuff... */
 	public function select($args=false){
 		return new OsimoDBQuery('select',$args);
