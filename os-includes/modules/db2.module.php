@@ -235,6 +235,10 @@ class OsimoDBQuery{
 	 * )
 	 */
 	public function row($cache=false,$cache_length=300){
+		if(!isset($this->limit)){
+			$this->limit(1);
+		}
+		
 		if($cache){
 			return reset(get('cache')->sqlquery($this->query(false),$cache_length));
 		}

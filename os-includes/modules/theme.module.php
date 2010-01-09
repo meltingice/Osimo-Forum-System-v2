@@ -176,7 +176,17 @@ class OsimoTheme extends OsimoModule{
 		if($echo){ echo $var; } else { return $var; }
 	}
 	
+	public function login_username_name($echo=true){
+		$var = "osimo_username";
+		if($echo){ echo $var; } else { return $var; }
+	}
+	
 	public function login_password_css_id($echo=true){
+		$var = "osimo_password";
+		if($echo){ echo $var; } else { return $var; }
+	}
+
+	public function login_password_name($echo=true){
 		$var = "osimo_password";
 		if($echo){ echo $var; } else { return $var; }
 	}

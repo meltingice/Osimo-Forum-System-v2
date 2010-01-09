@@ -4,7 +4,7 @@ class Osimo{
 	public $db,$cache,$paths,$theme,$debug,$bbparser;
 	private $defaults,$allowOptMod;
 	private $cacheOptions,$dbOptions,$debugOptions,$themeOptions;
-	public $GET;
+	public $GET,$POST;
 	
 	public function Osimo($options=false,$siteFolder=false){
 		if(!defined('SITE_FOLDER') && (!$siteFolder || empty($siteFolder))){
@@ -78,20 +78,20 @@ class Osimo{
 		define('OS_SITE_DESC',$this->config['site_description']);
 	}
 	
-	public function requireGET($id,$numeric=false,$redirect=true){
+	public function requireGET($id,$numeric=false,$redirect='index.php'){
 		if(!isset($_GET[$id])){
 			if($this->theme->page_type == 'index' || !$redirect){
 				$this->debug->error("OsimoCore: missing parameter '$id'",__LINE__,__FUNCTION__,__FILE__,true);
 				return false;
 			}
 			
-			header('Location: index.php');
+			header('Location: '.$redirect); exit;
 			return false;
 		}
 		else{
 			if($numeric && !is_numeric($_GET[$id])){
 				if($redirect){
-					header('Location: index.php');
+					header('Location: '.$redirect); exit;
 				}
 				else{
 					$this->debug->error("OsimoCore: invalid parameter '$id'",__LINE__,__FUNCTION__,__FILE__,true);
@@ -106,6 +106,39 @@ class Osimo{
 		}
 		else{
 			$this->GET[$id] = $this->db->escape($_GET[$id]);		
+		}
+
+		return true;
+	}
+	
+	public function requirePOST($id,$numeric=false,$redirect='index.php'){
+		if(!isset($_POST[$id])){
+			if($this->theme->page_type == 'index' || !$redirect){
+				$this->debug->error("OsimoCore: missing parameter '$id'",__LINE__,__FUNCTION__,__FILE__,true);
+				return false;
+			}
+			
+			header('Location: '.$redirect); exit;
+			return false;
+		}
+		else{
+			if($numeric && !is_numeric($_POST[$id])){
+				if($redirect){
+					header('Location: '.$redirect); exit;
+				}
+				else{
+					$this->debug->error("OsimoCore: invalid parameter '$id'",__LINE__,__FUNCTION__,__FILE__,true);
+				}
+				
+				return false;
+			}
+		}
+		
+		if($numeric){
+			$this->POST[$id] = $_POST[$id];
+		}
+		else{
+			$this->POST[$id] = $this->db->escape($_POST[$id]);		
 		}
 
 		return true;
