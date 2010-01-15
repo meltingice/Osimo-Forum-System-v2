@@ -95,11 +95,13 @@ class OsimoDBQuery{
 	private $type;
 	private $fields;
 	private $tables;
+	private $joins;
 	private $where;
 	private $query;
 	
 	function OsimoDBQuery($type,$args){
 		$this->type = $type;
+		$this->joins = array();
 		if($this->processArgs($args)){
 			return $this;
 		}
@@ -184,6 +186,50 @@ class OsimoDBQuery{
 		}
 		
 		return $this;
+	}
+	
+	public function left_join($table,$on,$outer=false){
+		$outer ? $type = "LEFT OUTER" : $type = "LEFT";
+		$this->save_join($type,$table,$on);
+		
+		return $this;
+	}
+	
+	public function right_join($table,$on,$outer=false){
+		$outer ? $type = "RIGHT OUTER" : $type = "RIGHT";
+		$this->save_join($type,$table,$on);
+		
+		return $this;
+	}
+	
+	public function inner_join($table,$on){
+		$this->save_join("INNER",$table,$on);
+		
+		return $this;
+	}
+	
+	public function outer_join($table,$on){
+		$this->save_join("OUTER",$table,$on);
+		
+		return $this;
+	}
+	
+	private function save_join($type,$table,$on){
+		if($this->type != 'select'){
+			trigger_error("OsimoDB: Invalid SQL chain - left_join() now allowed for ".$this->type." queries",E_USER_ERROR);
+			return NULL;
+		}
+		
+		$this->joins[] = "$type JOIN $table".$this->on($on);
+	}
+	
+	private function on($on){
+		if(stripos($on,'=')===false){ //use USING syntax
+			return " USING ($on) ";
+		}
+		else{
+			return " ON ($on) ";
+		}
 	}
 	
 	public function where(){
@@ -334,6 +380,11 @@ class OsimoDBQuery{
 			/* FROM tables */
 			$query .= ' FROM ';
 			$query .= implode(',',$this->tables);
+			
+			/* Table joins */
+			if(count($this->joins) > 0){
+				$query .= ' '.implode(" ",$this->joins);
+			}
 			
 			/* WHERE statement */
 			if(is_array($this->where)){
