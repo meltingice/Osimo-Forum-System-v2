@@ -1,4 +1,14 @@
 <?
+/*
+ * Osimo v2 Database Class
+ * -------------------------------
+ * Example usage (in Osimo):
+ * 		get('db')->select(*)->from('users')->where('id=%d',3)->row();
+ * Standalone usage:
+ *		$db = new OsimoDB([$options]);
+ *		$db->select(*)->from('users')->where('id=%d',3)->row();
+ */
+ 
 class OsimoDB extends OsimoModule{
 	protected $db_host;
 	protected $db_user;
@@ -32,7 +42,7 @@ class OsimoDB extends OsimoModule{
 	}
 	
 	public function connect(){
-		if(!$this->conn){
+		if(!$this->conn){ // don't open a new connection if one already exists
 			$this->conn = @mysql_connect($this->db_host, $this->db_user, $this->db_pass) or die("Could not connect to database!");
 			$this->conn_db = @mysql_select_db($this->db_name)or die("Could not select database!");
 		}
@@ -42,7 +52,8 @@ class OsimoDB extends OsimoModule{
 	 * General escape function
 	 * If given an array, will escape every value in the array
 	 * The quotes option will put quotes around each item, useful
-	 * for the WHERE clause.
+	 * for the WHERE clause of a SQL query.
+	 * Note: this function is static.
 	 */
 	public static function escape($data,$quotes=false){
 		if(is_array($data)){
@@ -67,13 +78,23 @@ class OsimoDB extends OsimoModule{
 		}
 	}
 	
+	/*
+	 * General date formatting function
+	 * Will format any date for the DATETIME database fieldtype
+	 * Can take both timestamps and pre-formatted dates
+	 * Note: this function is static.
+	 */
 	public static function formatDateForDB($date=false){
 		if(!$date){ $date = time(); }
 		elseif(!is_numeric($date)){ $date = strtotime($date); }
 		return date('Y-m-d H:i:s', $date);
 	}
 	
-	/* Now starts the tasty stuff... */
+	/* 
+	 * Now starts the tasty stuff... 
+	 * These are the various starts to a SQL query.
+	 * The functions return an OsimoDBQuery object.
+	 */
 	public function select($args=false){
 		return new OsimoDBQuery('select',$args);
 	}
@@ -88,6 +109,10 @@ class OsimoDB extends OsimoModule{
 	
 	public function query($query){
 		return new OsimoDBQuery('query',$query);
+	}
+	
+	public function delete(){
+		return new OsimoDBQuery('delete',false);
 	}
 }
 
