@@ -19,6 +19,9 @@ class OsimoDB extends OsimoModule{
 	private $conn_db;
 	private $error = array();
 	protected $error_type;
+	protected $log_level;
+	private $log;
+	private $bench_start,$bench_end;
 	
 	public function OsimoDB($options=false){
 		parent::OsimoModule();
@@ -28,7 +31,12 @@ class OsimoDB extends OsimoModule{
 			'db_pass'=>'password',
 			'db_name'=>'database',
 			'error_type'=>'error_log',
-			'autoconnect'=>true
+			'autoconnect'=>true,
+			'log_level'=>array(
+				'events'=>false,
+				'queries'=>false,
+				'benchmarking'=>false
+			)
 		);
 
 		$this->parseOptions($options);
@@ -39,12 +47,47 @@ class OsimoDB extends OsimoModule{
 		if($this->autoconnect){
 			$this->connect();
 		}
+		
+		$this->log = array();
 	}
 	
 	public function connect(){
 		if(!$this->conn){ // don't open a new connection if one already exists
+			$this->log('Opening database connection...','events');
 			$this->conn = @mysql_connect($this->db_host, $this->db_user, $this->db_pass) or die("Could not connect to database!");
 			$this->conn_db = @mysql_select_db($this->db_name)or die("Could not select database!");
+		}
+	}
+	
+	public function log($data,$type){
+		if($this->log_level[$type]){
+			$this->log[] = ucwords($type).': '.$data;
+		}
+		
+		return true;
+	}
+	
+	public function log_bench($action){
+		if(!$this->log_level['benchmarking']){ return true; }
+		
+		if($action=='start'){
+			$this->bench_start = microtime();
+		}
+		elseif($action=='stop'){
+			$this->bench_stop = microtime();
+			$diff = $this->bench_stop - $this->bench_start;
+			$this->log[] = "Query built and executed in $diff seconds.";
+		}
+		
+		return true;
+	}
+	
+	public function output_log($echo=true){
+		if(!$echo){ return $this->log; }
+		else{
+			foreach($this->log as $log){
+				echo $log.'<br />';
+			}
 		}
 	}
 	
@@ -96,27 +139,33 @@ class OsimoDB extends OsimoModule{
 	 * The functions return an OsimoDBQuery object.
 	 */
 	public function select($args=false){
-		return new OsimoDBQuery('select',$args);
+		$this->log("Starting SELECT query.",'events');
+		return new OsimoDBQuery('select',$args,$this);
 	}
 	
 	public function insert($args){
-		return new OsimoDBQuery('insert',$args);
+		$this->log("Starting INSERT query.",'events');
+		return new OsimoDBQuery('insert',$args,$this);
 	}
 	
 	public function update($args){
-		return new OsimoDBQuery('update',$args);
+		$this->log("Starting UPDATE query.",'events');
+		return new OsimoDBQuery('update',$args,$this);
 	}
 	
 	public function query($query){
-		return new OsimoDBQuery('query',$query);
+		$this->log("Starting generic query.",'events');
+		return new OsimoDBQuery('query',$query,$this);
 	}
 	
 	public function delete(){
-		return new OsimoDBQuery('delete',false);
+		$this->log("Starting DELETE query.",'events');
+		return new OsimoDBQuery('delete',false,$this);
 	}
 }
 
 class OsimoDBQuery{
+	private $db;
 	private $type;
 	private $fields;
 	private $tables;
@@ -124,9 +173,11 @@ class OsimoDBQuery{
 	private $where;
 	private $query;
 	
-	function OsimoDBQuery($type,$args){
+	function OsimoDBQuery($type,$args,$db){
+		$this->db = $db;
 		$this->type = $type;
 		$this->joins = array();
+		
 		if($this->processArgs($args)){
 			return $this;
 		}
@@ -286,7 +337,11 @@ class OsimoDBQuery{
 	 */
 	public function cell($cache=false,$cache_length=300){
 		if($cache){
-			return get('cache')->sqlquery($this->query(false),$cache_length);
+			$this->db->log('Referring to OsimoCache for data with expire time of '.$cache_length.' seconds.','events');
+			$data = reset(reset(get('cache')->sqlquery($this->query(false),$cache_length)));
+			$this->db->log('Using OsimoCache - '.$this->query,'queries');
+			$this->db->log_bench('stop');
+			return $data;
 		}
 		
 		$result = $this->query();
@@ -311,7 +366,11 @@ class OsimoDBQuery{
 		}
 		
 		if($cache){
-			return reset(get('cache')->sqlquery($this->query(false),$cache_length));
+			$this->db->log('Referring to OsimoCache for data with expire time of '.$cache_length.' seconds.','events');
+			$data = reset(get('cache')->sqlquery($this->query(false),$cache_length));
+			$this->db->log('Using OsimoCache - '.$this->query,'queries');
+			$this->db->log_bench('stop');
+			return $data;
 		}
 		
 		$result = $this->query();
@@ -374,6 +433,8 @@ class OsimoDBQuery{
 	}
 	
 	public function query($run=true,$cache=false,$cache_length=300){
+		if($run){ $this->db->log_bench('start'); }
+		
 		if(!$this->queryValidator()){
 			return NULL;
 		}
@@ -387,7 +448,10 @@ class OsimoDBQuery{
 		}
 		
 		if($run){
-			return mysql_query($this->query);
+			$result = mysql_query($this->query);
+			$this->db->log($this->query,'queries');
+			$this->db->log_bench('stop');
+			return $result;
 		}
 		
 		return $this->query;
