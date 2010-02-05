@@ -29,8 +29,6 @@ class Osimo{
 		);
 		
 		$this->parseOptions($options);
-		
-		$this->init();
 	}
 	
 	public function init(){
@@ -64,14 +62,13 @@ class Osimo{
 	private function loadConfig(){
 		if(!isset($_SESSION['config'])){
 			$data = $this->db->select('*')->from('config')->rows();
-			$_SESSION['config'] = $data;
+			foreach($data as $conf){
+				$this->config[$conf['name']] = $conf['value'];
+			}
+			$_SESSION['config'] = $this->config;
 		}
 		else{
 			$data = $_SESSION['config'];
-		}
-		
-		foreach($data as $conf){
-			$this->config[$conf['name']] = $conf['value'];
 		}
 		
 		define('OS_SITE_TITLE',$this->config['site_title']);

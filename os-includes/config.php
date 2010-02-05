@@ -11,11 +11,11 @@ error_reporting(E_ALL);
 #      if the forums are in the root URL directory, just put '/'
 define('SITE_FOLDER','/dev/osimo2');
 
-/* MySQL Database settings */
-$dbHost = 'localhost'; // address of the MySQL server
-$dbUser = 'user'; // MySQL username
-$dbPass = 'password'; // MySQL password
-$dbName = 'osimo'; // MySQL database name
+/* Database settings */
+$dbHost = 'localhost';
+$dbUser = 'user';
+$dbPass = 'password';
+$dbName = 'osimo';
 
 /* OsimoCache settings */
 # Currently Osimo only supports memcached as a caching method.
@@ -82,4 +82,5 @@ $osimo = new Osimo(
 		"cacheOptions"=>$cacheOptions
 	)
 );
+$osimo->init();
 ?>
