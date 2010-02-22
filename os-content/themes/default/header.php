@@ -16,6 +16,10 @@
 		<li><a href="index.php">Home</a></li>
 		<li><a href="#">My Profile</a></li>
 		<li><a href="#">Search</a></li>
-		<li><a href="#">Logout</a></li>
+		<? if(get('user')->is_logged_in()): ?>
+			<li><a href="logout.php">Logout</a></li>		
+		<? else: ?>
+			<li><a href="login.php">Login</a></li>	
+		<? endif; ?>
 	</ul>
 </div>

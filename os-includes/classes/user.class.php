@@ -117,5 +117,9 @@ class OsimoUser{
 		/* This will automatically format for classes/groups later */
 		return '<a href="'.SITE_URL.'profile.php?id='.$this->id.'">'.$this->username.'</a>';
 	}
+	
+	public function is_logged_in(){
+		return ($this->id != 0);
+	}
 }
 ?>

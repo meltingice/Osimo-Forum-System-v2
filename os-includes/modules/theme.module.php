@@ -25,9 +25,9 @@ class OsimoTheme extends OsimoModule{
 		define('ABS_THEME',$this->theme_path);
 		define('URL_THEME',URL_THEMES.$this->theme.'/');
 		
-		$this->add_javascript(SITE_URL.'os-includes/js/jquery.js');
-		$this->add_javascript(SITE_URL.'os-includes/js/jquery-ui.js');
-		$this->add_javascript(SITE_URL.'os_includes/js/osimo_editor/osimo_editor.js');
+		$this->add_javascript('os-includes/js/jquery.js');
+		$this->add_javascript('os-includes/js/jquery-ui.js');
+		$this->add_javascript('os_includes/js/osimo_editor/osimo_editor.js');
 	}
 	
 	/* Theme loading functions */
@@ -152,6 +152,15 @@ class OsimoTheme extends OsimoModule{
 		}
 		else{
 			$this->page_type = 'other';
+		}
+	}
+	
+	public function include_postbox(){
+		if(file_exists(ABS_THEME.'postbox.php')){
+			include(ABS_THEME.'postbox.php');
+		}
+		else{
+			include(ABS_DEFAULT_CONTENT.'postbox.php');
 		}
 	}
 	

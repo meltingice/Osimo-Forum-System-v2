@@ -68,7 +68,7 @@ class Osimo{
 			$_SESSION['config'] = $this->config;
 		}
 		else{
-			$data = $_SESSION['config'];
+			$this->config = $_SESSION['config'];
 		}
 		
 		define('OS_SITE_TITLE',$this->config['site_title']);

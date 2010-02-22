@@ -14,6 +14,8 @@
 		</div>
 	</div>
 	<? endwhile; endif; ?>
+	
+	<? get('theme')->include_postbox(); ?>
 </div>
 
 <? get('theme')->include_footer(); ?>

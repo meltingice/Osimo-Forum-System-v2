@@ -23,6 +23,7 @@ class OsimoPaths extends OsimoModule{
 		define('ABS_INC_MODULES',ABS_INC.'modules/');
 		define('ABS_THEMES',ABS_ROOT.'os-content/themes/');
 		define('ABS_AVATARS',ABS_ROOT.'os-content/avatars/');
+		define('ABS_DEFAULT_CONTENT',ABS_INC.'default_content/');
 		
 		/* Define relative paths */
 		define('SITE_URL',$this->siteURL);
