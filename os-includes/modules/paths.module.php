@@ -29,6 +29,8 @@ class OsimoPaths extends OsimoModule{
 		define('SITE_URL',$this->siteURL);
 		define('URL_THEMES',SITE_URL.'os-content/themes/');
 		define('URL_AVATARS',SITE_URL.'os-content/avatars/');
+		define('URL_JS',SITE_URL.'os-includes/js/');
+		define('URL_DEFAULT_CONTENT',SITE_URL.'os-includes/default_content/');
 	}
 	
 	private function parseFolderPath($folder,$s_slash=true,$e_slash=true){

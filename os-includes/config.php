@@ -51,7 +51,12 @@ $dbOptions = array(
 	'db_user'=>$dbUser,
 	'db_pass'=>$dbPass,
 	'db_name'=>$dbName,
-	'error_type'=>'stdout'
+	'error_type'=>'stdout',
+	'log_level'=>array(
+		'events'=>true,
+		'queries'=>true,
+		'benchmarking'=>true
+	)
 );
 
 /* Set cache options */
@@ -60,7 +65,7 @@ if(CACHE_TYPE=='memcache'){
 		'prefix'=>$memcachePrefix,
 		'cache_addr'=>$memcacheAddr,
 		'cache_port'=>$memcachePort,
-		'debug'=>false
+		'debug'=>true
 	);
 	
 	$session_save_path = "tcp://{$memcacheAddr[0]}:$memcachePort?persistent=1&weight=2&timeout=2&retry_interval=10,  ,tcp://{$memcacheAddr[0]}:$memcachePort  ";
@@ -73,13 +78,27 @@ else{
 	);
 }
 
+/* Debugging options */
+$debugOptions = array(
+	"OsimoDB"=>array(
+		'events'=>true,
+		'queries'=>true,
+		'benchmarking'=>true
+	),
+	"OsimoCache"=>array(
+		'events'=>true
+	)
+);
+
 session_start();
 
 global $osimo;
 $osimo = new Osimo(
 	array(
 		"dbOptions"=>$dbOptions,
-		"cacheOptions"=>$cacheOptions
+		"cacheOptions"=>$cacheOptions,
+		"debugOptions"=>$debugOptions,
+		"disableDebug"=>false
 	)
 );
 $osimo->init();

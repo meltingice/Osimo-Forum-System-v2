@@ -16,11 +16,15 @@ class OsimoCache extends OsimoModule{
 			'prefix'=>'',
 			'cache_addr'=>'localhost',
 			'cache_port'=>11211,
-			'cache_time'=>300,
-			'debug'=>false
+			'cache_time'=>300
 		);
 		
 		$this->parseOptions($options);
+		
+		/* Register the cache debugging defaults */
+		get('debug')->register('OsimoCache',array(
+			'events'=>false
+		));
 		
 		if(class_exists('Memcache')){
 			$this->memcache = new Memcache;
@@ -62,10 +66,6 @@ class OsimoCache extends OsimoModule{
 		return true;
 	}
 	
-	public function debug($switch){
-		if(is_bool($switch)){ $this->debug = $switch; }
-	}
-	
 	public function sqlquery($query,$expire=false){
 		if($query==''){ return false; }
 		
@@ -77,7 +77,7 @@ class OsimoCache extends OsimoModule{
 		
 		$type = $this->parseQuery($query,$sql_type);
 		if($cache_name = $this->queryTypeAllowed($type,$sql_type)){
-			$this->debugMsg("query allowed, attempting memcache");
+			get('debug')->debugMsg('OsimoCache','events',"Query allowed, attempting memcache");
 			$hash = $this->getHashKey($query,$cache_name);
 			
 			if(is_object($this->memcache)){
@@ -91,21 +91,21 @@ class OsimoCache extends OsimoModule{
 					if(is_object($this->memcache)){
 						$this->cache($hash,$db_result,$expire);
 					}
-					$this->debugMsg("Returning SQL result");
+					get('debug')->logMsg('OsimoCache','events',"Returning SQL result");
 					return $db_result;
 				}
 				else{
-					$this->debugMsg("SQL query returned no results");
+					get('debug')->logMsg('OsimoCache','events',"SQL query returned no results");
 					return false;
 				}
 			}
 			else{
-				$this->debugMsg("Returning memcache result");
+				get('debug')->logMsg('OsimoCache','events',"Returning memcache result");
 				return $result->data;
 			}
 		}
 		else{
-			$this->debugMsg("query not allowed, doing mysql\n");
+			get('debug')->logMsg('OsimoCache','events',"query not allowed, doing mysql\n");
 			return $this->db_query($query,'assoc');
 		}
 	}
@@ -201,7 +201,7 @@ class OsimoCache extends OsimoModule{
 	
 	private function cache($key,$data,$expire=false){
 		if(!is_object($this->memcache)){ return false; }
-		$this->debugMsg("Storing item in cache: $key");
+		get('debug')->logMsg('OsimoCache','events',"Storing item in cache: $key");
 		$tmp = new stdClass;
 		$tmp->data = $data;
 		if($expire && is_numeric($expire)){
@@ -212,18 +212,18 @@ class OsimoCache extends OsimoModule{
 		}
 		
 		if($this->memcache->set($key,$tmp,false,$expire_time)){
-			$this->debugMsg("Item stored!");
+			get('debug')->logMsg('OsimoCache','events',"Item stored!");
 			return true;
 		}
 		else{
-			$this->debugMsg("Unable to store item in cache.");
+			get('debug')->logMsg('OsimoCache','events',"Unable to store item in cache.");
 			return false;
 		}
 	}
 	
 	private function getHashKey($query,$cache_name){
 		$hash = $this->prefix.$cache_name ."_" . md5(trim(str_replace(array("\n","\t","\r","\0"),"",strtolower($query))));
-		$this->debugMsg("cache hash = $hash");
+		get('debug')->logMsg('OsimoCache','events',"cache hash = $hash");
 		return $hash;
 	}
 	
@@ -256,10 +256,10 @@ class OsimoCache extends OsimoModule{
 	}
 	
 	private function db_query($query,$db_return){
-		$this->debugMsg("Querying database: $query");
+		get('debug')->logMsg('OsimoCache','events',"Querying database: $query");
 		$result = mysql_query($query);
 		if(!$result){
-			$this->debugMsg(mysql_error());
+			get('debug')->logMsg('OsimoCache','events',mysql_error());
 			return false;
 		}
 		
@@ -270,7 +270,7 @@ class OsimoCache extends OsimoModule{
 				$dbdata[] = $data;
 			}
 			
-			$this->debugMsg($dbdata);
+			get('debug')->logMsg('OsimoCache','events',print_r($dbdata,true));
 			return $dbdata;
 		}
 		else{
@@ -280,14 +280,6 @@ class OsimoCache extends OsimoModule{
 			else{
 				return false;
 			}
-		}
-	}
-	
-	private function debugMsg($msg){
-		if($this->debug){
-			echo "Debug: ";
-			print_r($msg);
-			echo "\n";
 		}
 	}
 	

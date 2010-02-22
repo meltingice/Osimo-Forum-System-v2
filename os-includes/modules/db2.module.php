@@ -17,11 +17,6 @@ class OsimoDB extends OsimoModule{
 	protected $autoconnect;
 	private $conn;
 	private $conn_db;
-	private $error = array();
-	protected $error_type;
-	protected $log_level;
-	private $log;
-	private $bench_start,$bench_end;
 	
 	public function OsimoDB($options=false){
 		parent::OsimoModule();
@@ -31,14 +26,16 @@ class OsimoDB extends OsimoModule{
 			'db_pass'=>'password',
 			'db_name'=>'database',
 			'error_type'=>'error_log',
-			'autoconnect'=>true,
-			'log_level'=>array(
-				'events'=>false,
-				'queries'=>false,
-				'benchmarking'=>false
-			)
+			'autoconnect'=>true
 		);
 
+		/* Register the databases debugging defaults */
+		get('debug')->register('OsimoDB',array(
+			'events'=>false,
+			'queries'=>false,
+			'benchmarking'=>false
+		));
+		
 		$this->parseOptions($options);
 		$this->init();
 	}
@@ -47,47 +44,13 @@ class OsimoDB extends OsimoModule{
 		if($this->autoconnect){
 			$this->connect();
 		}
-		
-		$this->log = array();
 	}
 	
 	public function connect(){
 		if(!$this->conn){ // don't open a new connection if one already exists
-			$this->log('Opening database connection...','events');
+			get('debug')->logMsg('OsimoDB','events','Opening database connection...');
 			$this->conn = @mysql_connect($this->db_host, $this->db_user, $this->db_pass) or die("Could not connect to database!");
 			$this->conn_db = @mysql_select_db($this->db_name)or die("Could not select database!");
-		}
-	}
-	
-	public function log($data,$type){
-		if($this->log_level[$type]){
-			$this->log[] = ucwords($type).': '.$data;
-		}
-		
-		return true;
-	}
-	
-	public function log_bench($action){
-		if(!$this->log_level['benchmarking']){ return true; }
-		
-		if($action=='start'){
-			$this->bench_start = microtime();
-		}
-		elseif($action=='stop'){
-			$this->bench_stop = microtime();
-			$diff = $this->bench_stop - $this->bench_start;
-			$this->log[] = "Query built and executed in $diff seconds.";
-		}
-		
-		return true;
-	}
-	
-	public function output_log($echo=true){
-		if(!$echo){ return $this->log; }
-		else{
-			foreach($this->log as $log){
-				echo $log.'<br />';
-			}
 		}
 	}
 	
@@ -133,33 +96,37 @@ class OsimoDB extends OsimoModule{
 		return date('Y-m-d H:i:s', $date);
 	}
 	
+	public function get_error(){
+		echo mysql_error();
+	}
+	
 	/* 
 	 * Now starts the tasty stuff... 
 	 * These are the various starts to a SQL query.
 	 * The functions return an OsimoDBQuery object.
 	 */
 	public function select($args=false){
-		$this->log("Starting SELECT query.",'events');
+		get('debug')->logMsg('OsimoDB','events',"Starting SELECT query.");
 		return new OsimoDBQuery('select',$args,$this);
 	}
 	
 	public function insert($args){
-		$this->log("Starting INSERT query.",'events');
+		get('debug')->logMsg('OsimoDB','events',"Starting INSERT query.");
 		return new OsimoDBQuery('insert',$args,$this);
 	}
 	
 	public function update($args){
-		$this->log("Starting UPDATE query.",'events');
+		get('debug')->logMsg('OsimoDB','events',"Starting UPDATE query.");
 		return new OsimoDBQuery('update',$args,$this);
 	}
 	
 	public function query($query){
-		$this->log("Starting generic query.",'events');
+		get('debug')->logMsg('OsimoDB','events',"Starting generic query.");
 		return new OsimoDBQuery('query',$query,$this);
 	}
 	
 	public function delete(){
-		$this->log("Starting DELETE query.",'events');
+		get('debug')->logMsg('OsimoDB','events',"Starting DELETE query.");
 		return new OsimoDBQuery('delete',false,$this);
 	}
 }
@@ -197,28 +164,28 @@ class OsimoDBQuery{
 				trigger_error("OsimoDB: Missing table for DB UPDATE query",E_USER_ERROR);
 				return NULL;
 			}
+			elseif($this->type == 'insert'){
+				trigger_error("OsimoDB: Missing field info for DB INSERT query",E_USER_ERROR);
+			}
 			else{
 				trigger_error("OsimoDB: Invalid start of SQL query - missing arguments",E_USER_ERROR);
 				return NULL;
 			}
 		}
 		elseif(!is_array($args) && is_string($args)){
-			if($this->type == 'select' || $this->type == 'delete'){
+			if($this->type == 'select' || $this->type == 'delete' || $this->type == 'insert'){
 				$this->fields = $this->trimData(explode(',',$args));
 			}
 			elseif($this->type == 'query'){
 				$this->fields = NULL;
 				$this->query = $args;
 			}
-			elseif($this->type == 'update'){
-				$this->tables = $this->trimData(explode(',',$args));
-			}
 			else{
 				$this->tables = $this->trimData(explode(',',$args));
 			}
 		}
 		else{
-			if($this->type == 'select' || $this->type == 'delete'){
+			if($this->type == 'select' || $this->type == 'delete' || $this->type == 'insert'){
 				$this->fields = $args;
 			}
 			elseif($this->type == 'update'){
@@ -260,6 +227,22 @@ class OsimoDBQuery{
 		else{
 			$this->fields = $args;
 		}
+		
+		return $this;
+	}
+	
+	public function into($table){
+		if($this->type != 'insert'){
+			trigger_error("OsimoDB: Invalid SQL chain - into() not allowed for ".$this->type." queries",E_USER_ERROR);
+			return NULL;
+		}
+		
+		if(is_array($table)){
+			trigger_error("OsimoDB: Invalid datatype - into() can only take a string as an argument",E_USER_ERROR);
+			return NULL;
+		}
+		
+		$this->tables = $table;
 		
 		return $this;
 	}
@@ -331,16 +314,28 @@ class OsimoDBQuery{
 		return $this;
 	}
 	
+	public function values($args){
+		if($this->type != 'insert'){
+			trigger_error("OsimoDB: Invalid SQL chain - values() now allowed for ".$this->type." queries",E_USER_ERROR);
+			return NULL;
+		}
+		if(count($args) % count($this->fields) != 0){
+			trigger_error("OsimoDB: Invalid SQL data - incorrect number of entries for values()",E_USER_ERROR);
+			return NULL;
+		}
+		
+		$this->values = $args;
+	}
+	
 	/*
 	 * Returns a single value/cell from a mysql table
 	 * Return is *not* an array
 	 */
 	public function cell($cache=false,$cache_length=300){
 		if($cache){
-			$this->db->log('Referring to OsimoCache for data with expire time of '.$cache_length.' seconds.','events');
+			get('debug')->logMsg('OsimoDB','events','Referring to OsimoCache for data with expire time of '.$cache_length.' seconds.');
 			$data = reset(reset(get('cache')->sqlquery($this->query(false),$cache_length)));
-			$this->db->log('Using OsimoCache - '.$this->query,'queries');
-			$this->db->log_bench('stop');
+			get('debug')->logMsg('OsimoDB','events','Using OsimoCache - '.$this->query);
 			return $data;
 		}
 		
@@ -366,10 +361,9 @@ class OsimoDBQuery{
 		}
 		
 		if($cache){
-			$this->db->log('Referring to OsimoCache for data with expire time of '.$cache_length.' seconds.','events');
+			get('debug')->logMsg('OsimoDB','events','Referring to OsimoCache for data with expire time of '.$cache_length.' seconds.');
 			$data = reset(get('cache')->sqlquery($this->query(false),$cache_length));
-			$this->db->log('Using OsimoCache - '.$this->query,'queries');
-			$this->db->log_bench('stop');
+			get('debug')->logMsg('OsimoDB','events','Using OsimoCache - '.$this->query);
 			return $data;
 		}
 		
@@ -397,7 +391,10 @@ class OsimoDBQuery{
 	 */
 	public function rows($cache=false,$cache_length=300){
 		if($cache){
-			return get('cache')->sqlquery($this->query(false),$cache_length);
+			get('debug')->logMsg('OsimoDB','events','Referring to OsimoCache for data with expire time of '.$cache_length.' seconds.');
+			$data = get('cache')->sqlquery($this->query(false),$cache_length);
+			get('debug')->logMsg('OsimoDB','events','Using OsimoCache - '.$this->query);
+			return $data;
 		}
 		
 		$result = $this->query();
@@ -415,7 +412,7 @@ class OsimoDBQuery{
 	
 	public function insert(&$insertID){
 		$result = $this->query();
-		if($result && mysql_num_rows($result)>0){
+		if($result){
 			$insertID = mysql_insert_id();
 			return true;
 		}
@@ -433,7 +430,8 @@ class OsimoDBQuery{
 	}
 	
 	public function query($run=true,$cache=false,$cache_length=300){
-		if($run){ $this->db->log_bench('start'); }
+		$starttime = microtime(true);
+		get('debug')->timerStart('OsimoDB',$starttime);
 		
 		if(!$this->queryValidator()){
 			return NULL;
@@ -449,8 +447,8 @@ class OsimoDBQuery{
 		
 		if($run){
 			$result = mysql_query($this->query);
-			$this->db->log($this->query,'queries');
-			$this->db->log_bench('stop');
+			get('debug')->logMsg('OsimoDB','queries',$this->query);
+			get('debug')->timerEnd('OsimoDB',$starttime,"Query built and executed in ");
 			return $result;
 		}
 		

@@ -1,0 +1,11 @@
+#OsimoDebug{
+	display:none;
+	width: 500px;
+	height: 400px;
+	overflow-y: auto;
+	position: fixed;
+	top: 50px;
+	right: 50px;
+	background-color: #444444;
+	color: #f2f2f2;
+}

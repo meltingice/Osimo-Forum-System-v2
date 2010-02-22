@@ -3,7 +3,7 @@ class Osimo{
 	public $user,$config;
 	public $db,$cache,$paths,$theme,$debug,$bbparser;
 	private $defaults,$allowOptMod;
-	private $cacheOptions,$dbOptions,$debugOptions,$themeOptions;
+	private $cacheOptions,$dbOptions,$debugOptions,$themeOptions,$disableDebug;
 	public $GET,$POST;
 	
 	public function Osimo($options=false,$siteFolder=false){
@@ -19,24 +19,25 @@ class Osimo{
 		$this->paths = new OsimoPaths(SITE_FOLDER);
 		
 		$this->defaults = array(
-			
+			"disableDebug"=>true
 		);
 		
 		$this->allowOptMod = array(
 			"cacheOptions",
 			"dbOptions",
-			"debugOptions"
+			"debugOptions",
+			"disableDebug"
 		);
 		
 		$this->parseOptions($options);
 	}
 	
 	public function init(){
+		$this->debug = new OsimoDebug($this->debugOptions,$this->disableDebug);
 		$this->cache = new OsimoCache($this->cacheOptions);
 		$this->db = new OsimoDB($this->dbOptions);
 		$this->db->osimo = $this;
 		$this->user = new OsimoUser();
-		$this->debug = new OsimoDebug($this->debugOptions);
 		$this->theme = new OsimoTheme($this->themeOptions);
 		$this->data = new OsimoData();
 		$this->theme->osimo = $this;
@@ -149,6 +150,32 @@ class Osimo{
 			if(isset($this->$module) && in_array($optName,$this->allowOptMod)){
 				$this->$module->options($args[$i]);
 			}
+		}
+	}
+	
+	public function debug($switch){
+		if($switch){
+			$this->debug = true;
+		}
+		else{
+			$this->debug = false;
+		}
+	}
+	
+	public function debugMsg($type,$data){
+		if($this->debug){
+			$this->log[] = ucwords($type).': '.$data;
+		}
+	}
+	
+	public function output_log($echo=true){
+		if($echo){
+			foreach($this->log as $log){
+				echo $log;
+			}
+		}
+		else{
+			return $this->log;
 		}
 	}
 	

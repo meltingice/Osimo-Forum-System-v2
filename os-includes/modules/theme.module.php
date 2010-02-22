@@ -25,9 +25,15 @@ class OsimoTheme extends OsimoModule{
 		define('ABS_THEME',$this->theme_path);
 		define('URL_THEME',URL_THEMES.$this->theme.'/');
 		
-		$this->add_javascript('os-includes/js/jquery.js');
-		$this->add_javascript('os-includes/js/jquery-ui.js');
-		$this->add_javascript('os_includes/js/osimo_editor/osimo_editor.js');
+		$this->add_javascript(URL_JS.'jquery/jquery.js',false);
+		$this->add_javascript(URL_JS.'jquery/jquery-ui.js',false);
+		$this->add_javascript(URL_JS.'osimo_editor/osimo_editor.js',false);
+		if(!get('debug')->disabled()){
+			$this->add_javascript(URL_JS.'OsimoDebug.js',false);
+		}
+		$this->add_javascript(URL_JS.'OsimoJS.js',false);
+		
+		$this->add_stylesheet(URL_DEFAULT_CONTENT.'css/styles.css',false);
 	}
 	
 	/* Theme loading functions */
@@ -104,17 +110,25 @@ class OsimoTheme extends OsimoModule{
 		if($echo){ echo OS_SITE_DESC; } else { return OS_SITE_DESC; }
 	}
 	
-	public function add_stylesheet($url){
+	public function add_stylesheet($url,$is_theme=true){
+		if($is_theme){
+			$url = URL_THEME.$url;
+		}
+		
 		if(!in_array($url,$this->css)){
-			$this->css[] = URL_THEME.$url;
+			$this->css[] = $url;
 		}
 		
 		return $this;
 	}
 	
-	public function add_javascript($url){
+	public function add_javascript($url,$is_theme=true){
+		if($is_theme){
+			$url = URL_THEME.$url;
+		}
+		
 		if(!in_array($url,$this->js)){
-			$this->js[] = URL_THEME.$url;
+			$this->js[] = $url;
 		}
 		
 		return $this;
