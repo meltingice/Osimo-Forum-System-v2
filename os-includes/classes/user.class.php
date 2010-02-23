@@ -4,6 +4,11 @@ class OsimoUser{
 	private $is_guest,$ip_address;
 	
 	function OsimoUser($id=false,$is_viewer=true){
+		get('debug')->register('OsimoUser',array(
+			'events'=>false,
+			'benchmarking'=>false
+		));
+	
 		if($id && !is_numeric($id)){
 			get("debug")->error("OsimoUser: invalid user ID specified",true);
 			return false;

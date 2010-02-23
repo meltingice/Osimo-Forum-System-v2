@@ -8,7 +8,14 @@ class OsimoBBParser{
 	function OsimoBBParser(){
 		$this->isOsimo = true;
 		
+		get('debug')->register('OsimoBBParser',array(
+			'events'=>false,
+			'benchmarking'=>false
+		));
+		
+		get('debug')->timerStart('OsimoBBParser','BBLoadDefaults');
 		$this->loadDefaults();
+		get('debug')->timerEnd('OsimoBBParser','BBLoadDefaults','Default BBCodes loaded in ');
 	}
 	
 	private function loadDefaults(){
@@ -137,30 +144,52 @@ class OsimoBBParser{
 	public function addSimple($tag){
 		if(is_array($tag)){
 			foreach($tag as $name=>$code){
-				$this->simple_bbcodes[$name] = $code;
+				get('debug')->logMsg('OsimoBBParser','events',"Adding simple BBCode $name.");
+				if(isset($this->simple_bbcodes[$name])){
+					get('debug')->logError('OsimoBBParser','events',"Simple BBCode name $name already exists.");
+				}
+				else{
+					$this->simple_bbcodes[$name] = $code;
+				}
 			}
 		}
 		else{ //make an assumption...
-			$this->simple_bbcodes[$tag] = array(
-				"tag"=>$tag,
-				"search"=>"/\[$tag\](.+)\[\/$tag\]/i",
-				"replace"=>'<'.$tag.'>$1</'.$tag.'>'
-			);
+			get('debug')->logMsg('OsimoBBParser','events',"Adding simple BBCode $tag.");
+			if(isset($this->simple_bbcodes[$tag])){
+				get('debug')->logError('OsimoBBParser','events',"Simple BBCode name $tag already exists.");
+			}
+			else{
+				$this->simple_bbcodes[$tag] = array(
+					"tag"=>$tag,
+					"search"=>"/\[$tag\](.+)\[\/$tag\]/i",
+					"replace"=>'<'.$tag.'>$1</'.$tag.'>'
+				);
+			}
 		}
 	}
 	
 	public function addFancy($tag){
 		if(is_array($tag)){
 			foreach($tag as $name=>$code){
-				$this->fancy_bbcodes[$name] = $code;
+				get('debug')->logMsg('OsimoBBParser','events',"Adding fancy BBCode $name.");
+				if(isset($this->fancy_bbcodes[$name])){
+					get('debug')->logError('OsimoBBParser','events',"Fancy BBCode name $name already exists.");
+				}
+				else{
+					$this->fancy_bbcodes[$name] = $code;
+				}
 			}
 		}
 		else{
+			get('debug')->logError('OsimoBBParser','events','Fancy BBCode must be passed in as an array');
 			return false;
 		}
 	}
 	
 	public function parse($content,&$count=false){
+		get('debug')->timerStart('OsimoBBParser','ParseString');
+		$before = strlen($content);
+		
 		$search = array();
 		$replace = array();
 		
@@ -213,6 +242,9 @@ class OsimoBBParser{
 		
 		/* Handle smilies, will probably change later */
 		//$content = $this->processSmilies($content);
+		
+		$after = strlen($content);
+		get('debug')->timerEnd('OsimoBBParser','ParseString',"String of length $before successfully parsed, now $after characters, in ");
 		
 		return $content;
 	}

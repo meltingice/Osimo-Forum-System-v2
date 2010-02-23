@@ -87,6 +87,10 @@ $debugOptions = array(
 	),
 	"OsimoCache"=>array(
 		'events'=>true
+	),
+	"OsimoBBParser"=>array(
+		'events'=>true,
+		'benchmarking'=>true
 	)
 );
 

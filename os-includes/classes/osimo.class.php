@@ -3,7 +3,7 @@ class Osimo{
 	public $user,$config;
 	public $db,$cache,$paths,$theme,$debug,$bbparser;
 	private $defaults,$allowOptMod;
-	private $cacheOptions,$dbOptions,$debugOptions,$themeOptions,$disableDebug;
+	private $cacheOptions,$dbOptions,$debugOptions,$themeOptions,$disableDebug,$debugVisibility;
 	public $GET,$POST;
 	
 	public function Osimo($options=false,$siteFolder=false){
@@ -19,6 +19,7 @@ class Osimo{
 		$this->paths = new OsimoPaths(SITE_FOLDER);
 		
 		$this->defaults = array(
+			"debugVisibility"=>array(),
 			"disableDebug"=>true
 		);
 		
@@ -26,6 +27,7 @@ class Osimo{
 			"cacheOptions",
 			"dbOptions",
 			"debugOptions",
+			"debugVisibility",
 			"disableDebug"
 		);
 		
@@ -33,7 +35,7 @@ class Osimo{
 	}
 	
 	public function init(){
-		$this->debug = new OsimoDebug($this->debugOptions,$this->disableDebug);
+		$this->debug = new OsimoDebug($this->debugOptions,$this->disableDebug,$this->debugVisibility);
 		$this->cache = new OsimoCache($this->cacheOptions);
 		$this->db = new OsimoDB($this->dbOptions);
 		$this->db->osimo = $this;

@@ -10,10 +10,11 @@ class OsimoDebug extends OsimoModule{
 	private $error_backtrace;
 	private $override;
 	
-	function OsimoDebug($options=false,$override=true){
+	function OsimoDebug($options=false,$override=true,$visibility=array()){
 		parent::OsimoModule();
 		$this->modules = $options;
 		$this->override = $override;
+		$this->visibility = $visibility;
 		$this->scriptStart = microtime(true);
 	}
 	
@@ -32,6 +33,10 @@ class OsimoDebug extends OsimoModule{
 	
 	public function enabled($module,$type){
 		if($this->override == true){ return false; }
+		if(is_bool($this->visibility) && $this->visibility == false){ return false; }
+		elseif(is_array($this->visibility) && is_object(get('user')) && !in_array(get('user')->username,$this->visibility)){ return false; }
+		elseif(!is_object(get('user'))){ return false; }
+		
 		if(isset($this->modules[$module][$type]) && $this->modules[$module][$type] == true){
 			return true;
 		}
@@ -41,10 +46,7 @@ class OsimoDebug extends OsimoModule{
 	
 	public function timerStart($module,$name){
 		if(!$this->enabled($module,'benchmarking')){ return true; }
-		
-		if(!isset($this->timers_start[$module][$name])){
-			$this->timers_start[$module][$name] = microtime(true);
-		}
+		$this->timers_start[$module][$name] = microtime(true);
 	}
 	
 	public function timerEnd($module,$name,$prepend=false){
