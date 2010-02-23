@@ -34,6 +34,7 @@ class OsimoTheme extends OsimoModule{
 		$this->add_javascript(URL_JS.'OsimoJS.js',false);
 		
 		$this->add_stylesheet(URL_DEFAULT_CONTENT.'css/styles.css',false);
+		$this->add_stylesheet(URL_JS.'jquery/css/jquery-ui.css',false);
 	}
 	
 	/* Theme loading functions */
