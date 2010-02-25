@@ -16,11 +16,10 @@ class OsimoData extends OsimoModule{
 			
 		);
 		
-		//$this->parseOptions($options);
 		$this->init();
 	}
 	
-	/* Does nothing right now... */
+	/* Does nothing right now, maybe it never will... */
 	private function init(){
 		
 	}
@@ -43,7 +42,7 @@ class OsimoData extends OsimoModule{
 		);
 		
 		$args = Osimo::validateOQLArgs($args,$allowed,true);
-		$result = get('db')->select('*')->from('forums')->where(implode(' AND ',$args))->rows();
+		$result = get('db')->select('*')->from('forums')->where(implode(' AND ',$args))->order_by('title','ASC')->rows();
 		if($result){
 			foreach($result as $data){
 				$this->forum_tree[$data['category']][$data['id']] = $data;
@@ -67,7 +66,7 @@ class OsimoData extends OsimoModule{
 		
 		$args = Osimo::validateOQLArgs($args,$allowed,true);
 		$limit = get('osimo')->getPageLimits($page,20);
-		$result = get('db')->select('*')->from('threads')->where(implode(' AND ',$args))->limit($limit['start'],$limit['num'])->rows();
+		$result = get('db')->select('*')->from('threads')->where(implode(' AND ',$args))->order_by('last_post_time','DESC')->limit($limit['start'],$limit['num'])->rows();
 		if($result){
 			foreach($result as $data){
 				$this->thread_tree[$data['id']] = $data;
@@ -91,7 +90,7 @@ class OsimoData extends OsimoModule{
 		
 		$args = Osimo::validateOQLArgs($args,$allowed,true);
 		$limit = get('osimo')->getPageLimits($page,10);
-		$result = get('db')->select('*')->from('posts')->where(implode(' AND ',$args))->limit($limit['start'],$limit['num'])->rows();
+		$result = get('db')->select('*')->from('posts')->where(implode(' AND ',$args))->order_by('id','ASC')->limit($limit['start'],$limit['num'])->rows();
 		if($result){
 			foreach($result as $data){
 				$this->post_tree[$data['id']] = $data;

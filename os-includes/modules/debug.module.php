@@ -35,7 +35,6 @@ class OsimoDebug extends OsimoModule{
 		if($this->override == true){ return false; }
 		if(is_bool($this->visibility) && $this->visibility == false){ return false; }
 		elseif(is_array($this->visibility) && is_object(get('user')) && !in_array(get('user')->username,$this->visibility)){ return false; }
-		elseif(!is_object(get('user'))){ return false; }
 		
 		if(isset($this->modules[$module][$type]) && $this->modules[$module][$type] == true){
 			return true;

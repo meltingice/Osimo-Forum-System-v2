@@ -139,11 +139,13 @@ class OsimoDBQuery{
 	private $joins;
 	private $where;
 	private $query;
+	private $order_by;
 	
 	function OsimoDBQuery($type,$args,$db){
 		$this->db = $db;
 		$this->type = $type;
 		$this->joins = array();
+		$this->order_by = array();
 		
 		if($this->processArgs($args)){
 			return $this;
@@ -314,6 +316,23 @@ class OsimoDBQuery{
 		return $this;
 	}
 	
+	public function order_by($cols,$dir=false){
+		if(is_array($cols)){
+			$this->order_by = $cols;
+		}
+		else{
+			if($dir == false){
+				trigger_error("OsimoDB: Missing ORDER BY direction for SQL query",E_USER_ERROR);
+				return NULL;
+			}
+			else{
+				$this->order_by[$cols] = $dir;
+			}
+		}
+		
+		return $this;
+	}
+	
 	public function values($args){
 		if($this->type != 'insert'){
 			trigger_error("OsimoDB: Invalid SQL chain - values() now allowed for ".$this->type." queries",E_USER_ERROR);
@@ -325,6 +344,8 @@ class OsimoDBQuery{
 		}
 		
 		$this->values = $args;
+		
+		return $this;
 	}
 	
 	/*
@@ -335,7 +356,6 @@ class OsimoDBQuery{
 		if($cache){
 			get('debug')->logMsg('OsimoDB','events','Referring to OsimoCache for data with expire time of '.$cache_length.' seconds.');
 			$data = reset(reset(get('cache')->sqlquery($this->query(false),$cache_length)));
-			get('debug')->logMsg('OsimoDB','events','Using OsimoCache - '.$this->query);
 			return $data;
 		}
 		
@@ -476,6 +496,14 @@ class OsimoDBQuery{
 			/* WHERE statement */
 			if(is_array($this->where)){
 				$query .= ' WHERE '.$this->parseWhere().' ';
+			}
+			
+			if($this->type == 'select' && count($this->order_by) > 0){
+				$query .= ' ORDER BY ';
+				foreach($this->order_by as $col=>$dir){
+					$temp[] = "$col $dir";
+				}
+				$query .= implode(",",$temp);
 			}
 			
 			/* LIMIT statement */

@@ -13,7 +13,7 @@ class OsimoUser{
 			get("debug")->error("OsimoUser: invalid user ID specified",true);
 			return false;
 		}
-		
+
 		if(!$is_viewer){
 			$this->loadBasicInfo($id);
 			return true;
@@ -35,12 +35,14 @@ class OsimoUser{
 	}
 	
 	private function loadFromSession(){
+		get('debug')->logMsg('OsimoUser','events','Loading user from saved session.');
 		foreach($_SESSION['user'] as $key=>$val){
 			$this->$key = $val;
 		}
 	}
 	
 	private function loadFromDB($id){
+		get('debug')->logMsg('OsimoUser','events','Loading user from database.');
 		$user = get("db")->select('id,username,email,ip_address,time_format')->from('users')->where('id=%d',$id)->row(true,300);
 		foreach($user as $key=>$val){
 			$this->$key = $val;
@@ -48,6 +50,7 @@ class OsimoUser{
 	}
 	
 	private function loadAsGuest(){
+		get('debug')->logMsg('OsimoUser','events','Setting user as guest.');
 		$this->id = 0;
 		$this->username = 'Guest';
 		$this->email = false;
@@ -56,6 +59,7 @@ class OsimoUser{
 	}
 	
 	private function loadBasicInfo($id){
+		get('debug')->logMsg('OsimoUser','events','Loading information for user ID #'.$id);
 		$user = get('db')->select('id,username')->from('users')->where('id=%d',$id)->row(true,86400);
 		foreach($user as $key=>$val){
 			$this->$key = $val;
@@ -71,6 +75,7 @@ class OsimoUser{
 	private function ip_check(){
 		if($this->is_guest){ return true; }
 		if($this->ip_address != $_SERVER['REMOTE_ADDR']){
+			get('debug')->logMsg('OsimoUsers','events','User logging in from new IP, updating database...');
 			get('db')->update('users')
 				->set(array('ip_address'=>$_SERVER['REMOTE_ADDR']))
 				->where('id=%d',$this->id)
@@ -88,11 +93,14 @@ class OsimoUser{
 		
 		$last_page = get('paths')->getCurrentPage();
 		$last_visit = get('db')->formatDateForDB();
+		$page_type = get('theme')->page_type;
+		
+		get('debug')->logMsg('OsimoUser','events',"Updating user browsing information. Page: $last_page, page type: $page_type, visit time: $last_visit");
 		
 		$result = get('db')->update('users')
 			->set(array(
 				'last_page'=>$last_page,
-				'last_page_type'=>get('theme')->page_type,
+				'last_page_type'=>$page_type,
 				'time_last_visit'=>$last_visit
 			))
 			->where('id=%d',$this->id)
