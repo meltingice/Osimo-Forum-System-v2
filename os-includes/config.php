@@ -89,6 +89,10 @@ $debugOptions = array(
 		'events'=>true
 	),
 	"OsimoBBParser"=>array(
+		'events'=>false,
+		'benchmarking'=>true
+	),
+	"OsimoUser"=>array(
 		'events'=>true,
 		'benchmarking'=>true
 	)
@@ -102,6 +106,7 @@ $osimo = new Osimo(
 		"dbOptions"=>$dbOptions,
 		"cacheOptions"=>$cacheOptions,
 		"debugOptions"=>$debugOptions,
+		"debugVisibility"=>true,
 		"disableDebug"=>false
 	)
 );

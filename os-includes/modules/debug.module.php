@@ -77,29 +77,11 @@ class OsimoDebug extends OsimoModule{
 	}
 	
 	public function output_log(){
-		echo '<div id="OsimoDebugWrap">';
-		echo '<div id="OsimoDebugTab" onclick="osimo.debug.showPHPDebugInfo()">Show/Hide Debug</div>';
-		echo '<div id="OsimoDebug">';
-		if(is_array($this->msgs) || is_array($this->errors)){
-			echo "<h1>Osimo Debug Information</h1>";
-		}
-		if(is_array($this->msgs)){
-			echo "<h2>Messages</h2>";
-			echo "<ul>";
-			foreach($this->msgs as $msg){
-				echo "<li>$msg</li>";
-			}
-			echo "</ul>";
-		}
-		if(is_array($this->errors)){
-			echo "<h2>Errors</h2>";
-			echo "<ul>";
-			foreach($this->errors as $error){
-				echo "<li>$error</li>";
-			}
-			echo "</ul>";
-		}
-		echo '</div></div>';
+		$output = array(
+			'msgs'=>count($this->msgs) > 0 ? $this->msgs : array(),
+			'errors'=>count($this->errors) > 0 ? $this->errors : array()
+		);
+		echo '<div id="OsimoDebug">'.json_encode($output).'</div>';
 	}
 	
 	/*
