@@ -1,7 +1,7 @@
 <?
 class OsimoDebug extends OsimoModule{
 	private $modules;
-	private $scriptStart;
+	private $scriptStart,$scriptEnd;
 	private $timers_start;
 	private $timer_desc;
 	private $timer_duration;
@@ -72,6 +72,7 @@ class OsimoDebug extends OsimoModule{
 	
 	public function logMsg($module,$type,$msg){
 		if($this->enabled($module,$type)){
+			$type = ucwords(str_replace("_"," ",$type));
 			$this->msgs[] = "$module - $type: $msg";
 		}
 	}
@@ -98,6 +99,12 @@ class OsimoDebug extends OsimoModule{
 	
 	public function disabled(){
 		return $this->override;
+	}
+	
+	public function scriptEnd(){
+		if($this->disabled()){ return true; }
+		$this->scriptEnd = microtime(true);
+		$this->msgs[] = "Total script approx. execution time: ".($this->scriptEnd - $this->scriptStart);
 	}
 }
 ?>

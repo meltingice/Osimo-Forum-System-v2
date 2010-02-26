@@ -21,6 +21,10 @@ class OsimoTheme extends OsimoModule{
 		$this->css = array();
 		$this->js = array();
 		
+		if(isset(get('osimo')->config['current_theme'])){
+			$this->theme = get('osimo')->config['current_theme'];
+		}
+		
 		$this->theme_path = ABS_THEMES.$this->theme.'/';
 		define('ABS_THEME',$this->theme_path);
 		define('URL_THEME',URL_THEMES.$this->theme.'/');
@@ -39,9 +43,8 @@ class OsimoTheme extends OsimoModule{
 	
 	/* Theme loading functions */
 	public function load($file){
-		$osimo = $this->osimo;
 		if(!is_file($this->theme_path."$file.php")){
-			$this->osimo->debug->error("OsimoTheme: unable to locate file '$file'",__LINE__,__FUNCTION__,__FILE__,true);
+			get('debug')->error("OsimoTheme: unable to locate file '$file'",__LINE__,__FUNCTION__,__FILE__,true);
 			return false;
 		}
 		
@@ -74,6 +77,8 @@ class OsimoTheme extends OsimoModule{
 	
 	public function include_footer($echo=true){
 		$this->include_theme_file('footer.php',$echo);
+		get('debug')->scriptEnd();
+		get('debug')->output_log();
 	}
 
 	/* Theme altering functions */

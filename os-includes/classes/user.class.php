@@ -1,6 +1,6 @@
 <?
 class OsimoUser{
-	public $id,$username,$email;
+	public $id,$username,$email,$time_format;
 	private $is_guest,$ip_address;
 	
 	function OsimoUser($id=false,$is_viewer=true){
@@ -56,6 +56,7 @@ class OsimoUser{
 		$this->email = false;
 		$this->is_guest = true;
 		$this->ip_address = $_SERVER['REMOTE_ADDR'];
+		$this->time_format = 'M j, Y g:ia';
 	}
 	
 	private function loadBasicInfo($id){
@@ -129,6 +130,10 @@ class OsimoUser{
 	public function profile_link(){
 		/* This will automatically format for classes/groups later */
 		return '<a href="'.SITE_URL.'profile.php?id='.$this->id.'">'.$this->username.'</a>';
+	}
+	
+	public static function get_profile_link($id,$username){
+		return '<a href="'.SITE_URL.'profile.php?id='.$id.'">'.$username.'</a>';
 	}
 	
 	public function is_logged_in(){

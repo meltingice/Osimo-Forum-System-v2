@@ -39,13 +39,16 @@ class Osimo{
 		$this->cache = new OsimoCache($this->cacheOptions);
 		$this->db = new OsimoDB($this->dbOptions);
 		$this->db->osimo = $this;
+		
+		$this->loadConfig();
+		
 		$this->user = new OsimoUser();
 		$this->theme = new OsimoTheme($this->themeOptions);
 		$this->data = new OsimoData();
 		$this->theme->osimo = $this;
 		$this->bbparser = new OsimoBBParser();
 		
-		$this->loadConfig();
+		
 	}
 	
 	private function parseOptions($options){
@@ -63,7 +66,13 @@ class Osimo{
 	}
 	
 	private function loadConfig(){
+		get('debug')->register('Osimo',array(
+			'events'=>false,
+			'object_creation'=>false
+		));
+		
 		if(!isset($_SESSION['config'])){
+			get('debug')->logMsg('Osimo','events',"Loading site config from database...");
 			$data = $this->db->select('*')->from('config')->rows();
 			foreach($data as $conf){
 				$this->config[$conf['name']] = $conf['value'];
@@ -71,8 +80,11 @@ class Osimo{
 			$_SESSION['config'] = $this->config;
 		}
 		else{
+			get('debug')->logMsg('Osimo','events',"Loading site config from saved session.");
 			$this->config = $_SESSION['config'];
 		}
+		
+		get('debug')->logMsg('Osimo','events',"Site config: ".print_r($this->config,true));
 		
 		define('OS_SITE_TITLE',$this->config['site_title']);
 		define('OS_SITE_DESC',$this->config['site_description']);
@@ -164,22 +176,7 @@ class Osimo{
 		}
 	}
 	
-	public function debugMsg($type,$data){
-		if($this->debug){
-			$this->log[] = ucwords($type).': '.$data;
-		}
-	}
 	
-	public function output_log($echo=true){
-		if($echo){
-			foreach($this->log as $log){
-				echo $log;
-			}
-		}
-		else{
-			return $this->log;
-		}
-	}
 	
 	public static function loadIncludes($siteFolder){
 		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/osimo_module.php');
@@ -196,28 +193,34 @@ class Osimo{
 	}
 	
 	/* Dynamicly loaded objects */
-	public function forum($args=false){
-		return $this->initDynamicObj($args,'OsimoForum','forum','forum');
-	}
-	
 	public function category($args=false){
-		return $this->initDynamicObj($args,'OsimoCategory','category','category');
+		return $this->initDynamicObj($args,'OsimoCategory','category');
 	}
 	
-	private function initDynamicObj($args,$Class,$var,$file){
-		if(!isset($this->$var) && !class_exists($Class) && file_exists(ABS_INC_CLASSES.$file.'.class.php')){
+	public function forum($args=false){
+		return $this->initDynamicObj($args,'OsimoForum','forum');
+	}
+	
+	public function thread($args=false){
+		return $this->initDynamicObj($args,'OsimoThread','thread');
+	}
+	
+	public function post($args=false){
+		return $this->initDynamicObj($args,'OsimoPost','post');
+	}
+	
+	private function initDynamicObj($args,$Class,$file){
+		if(!class_exists($Class) && file_exists(ABS_INC_CLASSES.$file.'.class.php')){
+			get('debug')->logMsg('Osimo','object_creation',"Including {$file}.class.php in order to create $Class object.");
 			include_once(ABS_INC_CLASSES.$file.'.class.php');
 		}
-		else{
-			$this->debug->error("OsimoCore: unable to locate class file '$file.class.php'",__LINE__,__FUNCTION__,__FILE__,true);
+		elseif(!file_exists(ABS_INC_CLASSES.$file.'.class.php')){
+			get('debug')->error("OsimoCore: unable to locate class file '$file.class.php'",__LINE__,__FUNCTION__,__FILE__,true);
 			return false;
 		}
 		
-		if(!isset($this->$var) || !is_object($this->var)){
-			$this->$var = new $Class($args);
-		}
-		
-		return $this->$var;
+		get('debug')->logMsg('Osimo','object_creation',"Dynamically creating object $Class with arguments: \n".print_r($args,true));
+		return new $Class($args);
 	}
 	
 	public static function validateOQLArgs($args,$allowed,$escape=false){

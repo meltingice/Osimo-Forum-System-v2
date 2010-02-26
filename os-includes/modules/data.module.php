@@ -65,7 +65,8 @@ class OsimoData extends OsimoModule{
 		);
 		
 		$args = Osimo::validateOQLArgs($args,$allowed,true);
-		$limit = get('osimo')->getPageLimits($page,20);
+		isset(get('osimo')->config['thread_num_per_page']) ? $num = get('osimo')->config['thread_num_per_page'] : $num = 20;
+		$limit = get('osimo')->getPageLimits($page,$num);
 		$result = get('db')->select('*')->from('threads')->where(implode(' AND ',$args))->order_by('last_post_time','DESC')->limit($limit['start'],$limit['num'])->rows();
 		if($result){
 			foreach($result as $data){
@@ -89,11 +90,18 @@ class OsimoData extends OsimoModule{
 		);
 		
 		$args = Osimo::validateOQLArgs($args,$allowed,true);
-		$limit = get('osimo')->getPageLimits($page,10);
+
+		isset(get('osimo')->config['post_num_per_page']) ? $num = get('osimo')->config['post_num_per_page'] : $num = 10;
+		$limit = get('osimo')->getPageLimits($page,$num);
 		$result = get('db')->select('*')->from('posts')->where(implode(' AND ',$args))->order_by('id','ASC')->limit($limit['start'],$limit['num'])->rows();
 		if($result){
 			foreach($result as $data){
 				$this->post_tree[$data['id']] = $data;
+			}
+			
+			$result = get('db')->select('*')->from('threads')->where('id=%d',get('osimo')->GET['id'])->limit(1)->row();
+			if($result){
+				$this->the_thread = get('osimo')->thread($result);
 			}
 		}
 	}
@@ -131,26 +139,48 @@ class OsimoData extends OsimoModule{
 	
 	/* Sets the current forum and returns false when forums are depleted */
 	public function has_forums(){
-		$this->the_forum = array_shift($this->category_tree);
-		return is_array($this->the_forum);
+		$forum_info = array_shift($this->category_tree);
+		if(is_array($forum_info)){
+			$this->the_forum = get('osimo')->forum($forum_info);
+			if(is_object($this->the_forum)){
+				return true;
+			}
+		}
+		
+		return NULL;
 	}
 	
 	public function has_threads(){
-		$this->the_thread = array_shift($this->thread_tree);
-		return is_array($this->the_thread);
+		$thread_info = array_shift($this->thread_tree);
+		if(is_array($thread_info)){
+			$this->the_thread = get('osimo')->thread($thread_info);
+			if(is_object($this->the_thread)){
+				return true;
+			}
+		}
+
+		return NULL;
 	}
 	
 	public function has_posts(){
-		$this->the_post = array_shift($this->post_tree);
-		if(is_array($this->the_post) && !isset($this->post_users[$this->the_post['poster_id']])){
-			$this->post_users[$this->the_post['poster_id']] = new OsimoUser($this->the_post['poster_id'],false);
+		$post_info = array_shift($this->post_tree);		
+		if(is_array($post_info)){
+			$this->the_post = get('osimo')->post($post_info);
+			if(is_object($this->the_post)){
+				$this->set_post_user();
+				return true;
+			}
 		}
 		
-		if(is_array($this->the_post)){
-			$this->post_user = $this->post_users[$this->the_post['poster_id']];
+		return NULL;
+	}
+	
+	private function set_post_user(){
+		if(!isset($this->post_users[$this->the_post->get('poster_id')])){
+			$this->post_users[$this->the_post->get('poster_id')] = new OsimoUser($this->the_post->get('poster_id'),false);
 		}
 		
-		return is_array($this->the_post);
+		$this->post_user = $this->post_users[$this->the_post->get('poster_id')];
 	}
 	
 	/* Data output functions */
@@ -166,30 +196,25 @@ class OsimoData extends OsimoModule{
 	
 	public function the_forum($field=false,$echo=true){
 		if(!$field){ return $this->the_forum; }
-		
-		if(isset($this->the_forum[$field])){
-			if($echo){ echo $this->the_forum[$field]; } else { return $this->the_forum[$field]; }
-		}
+		if($echo){ echo $this->the_forum->get($field); } else { return $this->the_forum->get($field); }
 		
 		return NULL;
 	}
 	
 	public function the_thread($field=false,$echo=true){
 		if(!$field){ return $this->the_thread; }
-		
-		if(isset($this->the_thread[$field])){
-			if($echo){ echo $this->the_thread[$field]; } else { return $this->the_thread[$field]; }
-		}
+		if($echo){ echo $this->the_thread->get($field); } else { return $this->the_thread->get($field); }
 		
 		return NULL;
 	}
 	
 	public function the_post($field=false,$echo=true){
-		if(!$field){ return $this->the_post; }
-		
-		if(isset($this->the_post[$field])){
-			if($echo){ echo $this->the_post[$field]; } else { return $this->the_post[$field]; }
+		if($field == 'poster_link'){
+			if($echo){ echo $this->post_user->profile_link(); return true; } else { return $this->post_user->profile_link(); }
 		}
+		elseif(!$field){ return $this->the_post; }
+		
+		if($echo){ echo $this->the_post->get($field); } else { return $this->the_post->get($field); }
 		
 		return NULL;
 	}
@@ -204,6 +229,14 @@ class OsimoData extends OsimoModule{
 		return NULL;
 	}
 	
+	public function thread_title($echo=true){
+		if($echo){ echo $this->the_thread->get('title'); } else{ return $this->the_thread->get('title'); }
+	}
+	
+	public function thread_description($echo=true){
+		if($echo){ echo $this->the_thread->get('description'); } else{ return $this->the_thread->get('description'); }
+	}
+	
 	public function the_forum_link(){
 		$name = $this->the_forum('title',false);
 		$id = $this->the_forum('id',false);
@@ -216,20 +249,16 @@ class OsimoData extends OsimoModule{
 		echo '<a href="'.SITE_URL.'thread.php?id='.$id.'">'.$name.'</a>';
 	}
 	
-	public function the_user_profile_link(){
-		echo $this->post_user->profile_link();
-	}
-	
 	public function the_avatar_url($echo=true){
 		if($echo){ echo $this->post_user->avatar(); } else { return $this->post_user->avatar(); }
 	}
 	
 	public function the_post_css_id($echo=true){
-		if($echo){ echo "post_".$this->the_post['id']; } else { return "post_".$this->the_post['id']; }
+		if($echo){ echo "post_".$this->the_post->get('id'); } else { return "post_".$this->the_post->get('id'); }
 	}
 	
 	public function the_formatted_post($echo=true){
-		if($echo){ echo get('bbparser')->parse($this->the_post['body']); } else { return get('bbparser')->parse($this->the_post['body']); }
+		if($echo){ echo $this->the_post->parse_post(); } else { return $this->the_post->parse_post(); }
 	}
 }
 ?>

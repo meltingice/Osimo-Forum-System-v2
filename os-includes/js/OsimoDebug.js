@@ -61,14 +61,14 @@ OsimoDebug.prototype.showPHPDebugInfoHTML = function(){
 	if(info.msgs.length > 0){
 	    HTML += "<h2>Messages</h2><ul>";
 	    $.each(info.msgs,function(i,msg){
-	    	HTML += "<li>"+msg+"</li>";
+	    	HTML += "<li><pre>"+msg+"</pre></li>";
 	    });
 	    HTML += '</ul>';
 	}
 	if(info.errors.length > 0){
 	   HTML += "<h2>Errors</h2><ul>";
 	    $.each(info.errors,function(i,error){
-	    	HTML += "<li>"+error+"</li>";
+	    	HTML += "<li><pre>"+error+"</pre></li>";
 	    });
 	    HTML += '</ul>';
 	}	
