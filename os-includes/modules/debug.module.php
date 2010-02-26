@@ -77,6 +77,8 @@ class OsimoDebug extends OsimoModule{
 	}
 	
 	public function output_log(){
+		if(count($this->msgs) == 0 && count($this->errors) == 0){ return true; }
+		
 		$output = array(
 			'msgs'=>count($this->msgs) > 0 ? $this->msgs : array(),
 			'errors'=>count($this->errors) > 0 ? $this->errors : array()

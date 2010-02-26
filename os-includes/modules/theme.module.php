@@ -220,6 +220,19 @@ class OsimoTheme extends OsimoModule{
 		if($echo){ echo $var; } else { return $var; }
 	}
 	
+	public function osimo_editor($options=false,$pretext=''){
+		echo '<textarea id="OsimoPostbox">'.$pretext.'</textarea>';
+		echo "
+			<script type=\"text/javascript\">
+				$(window).ready(function(){
+					$('#OsimoPostbox').osimoeditor(
+						".(is_array($options) ? json_encode($options) : '')."
+					);
+				});
+			</script>
+		";
+	}
+	
 	public function include_contents($filename){
 		$osimo = $this->osimo;
 

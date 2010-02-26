@@ -10,4 +10,5 @@ function OsimoJS(options){
 	this.options = $.extend({},this.defaults,options);
 	
 	this.debug = new OsimoDebug(this.options.debug);
+	this.editor = null;
 }
