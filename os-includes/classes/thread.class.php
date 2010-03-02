@@ -11,8 +11,8 @@ class OsimoThread{
 	}
 	
 	private function format_dates(){
-		$this->original_post_time = date(get('user')->time_format,strtotime($this->original_post_time));
-		$this->last_post_time = date(get('user')->time_format,strtotime($this->last_post_time));
+		$this->original_post_time = get('user')->date_format($this->original_post_time,true);
+		$this->last_post_time = get('user')->date_format($this->last_post_time,true);
 	}
 	
 	public function get($field){

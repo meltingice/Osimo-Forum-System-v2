@@ -1,12 +1,12 @@
+<div id="postbox_wrap">
 <? get('theme')->osimo_editor(
 	array(
 			'width'=>'100%',
-			'height'=>'400px',
-			'editorHeight'=>'300px',
+			'editorHeight'=>'230px',
 			'editorStyles'=>array(
-				'background-color'=>'#444444',
-				'color'=>'#f2f2f2',
+				'color'=>'#333333',
 				'font-family'=>'Arial, Helvetica, Verdana, sans-serif'
 			)
 		));
 ?>
+</div>

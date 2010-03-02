@@ -11,8 +11,8 @@ class OsimoPost{
 	}
 	
 	private function format_dates(){
-		$this->post_time = date(get('user')->time_format,strtotime($this->post_time));
-		$this->last_edit_time = date(get('user')->time_format,strtotime($this->last_edit_time));
+		$this->post_time = get('user')->date_format($this->post_time,true);
+		$this->last_edit_time = get('user')->date_format($this->last_edit_time,true);
 	}
 	
 	public function get($field){

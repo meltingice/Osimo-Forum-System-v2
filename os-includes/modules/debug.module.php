@@ -66,6 +66,7 @@ class OsimoDebug extends OsimoModule{
 	
 	public function logError($module,$type,$error){
 		if($this->enabled($module,$type)){
+			$error = rawurlencode($error);
 			$this->errors[] = "$module - $type: $error";
 		}
 	}
@@ -73,6 +74,7 @@ class OsimoDebug extends OsimoModule{
 	public function logMsg($module,$type,$msg){
 		if($this->enabled($module,$type)){
 			$type = ucwords(str_replace("_"," ",$type));
+			$msg = rawurlencode($msg);
 			$this->msgs[] = "$module - $type: $msg";
 		}
 	}

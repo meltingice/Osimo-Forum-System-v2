@@ -19,15 +19,14 @@ class OsimoData extends OsimoModule{
 		$this->init();
 	}
 	
-	/* Does nothing right now, maybe it never will... */
 	private function init(){
-		
+		get('debug')->register('OsimoData',array('events'));
 	}
 	
 	public function load_forum_list($args=false){
 		if(!$args){ //determine what to load automatically
 			if(get('theme')->is_index()){
-				$args = 'parent_forum=-1';
+				$args = 'parent_forum=0';
 			}
 			elseif(get('theme')->is_forum()){
 				$args = 'parent_forum='.get('osimo')->GET['id'];
@@ -259,6 +258,49 @@ class OsimoData extends OsimoModule{
 	
 	public function the_formatted_post($echo=true){
 		if($echo){ echo $this->the_post->parse_post(); } else { return $this->the_post->parse_post(); }
+	}
+	
+	public function breadcrumb_trail($sep=' &raquo; ',$echo=true){
+		$trail = $this->build_breadcrumb_trail();
+		if(!$trail){ return false; }
+		
+		$output = implode($sep,$trail);
+		if($echo){ echo $output; }
+		else{ return $output; }
+	}
+	
+	private function build_breadcrumb_trail(){
+		get('debug')->logMsg('OsimoData','events','Beginning breadcrumb trail builder...');
+		
+		if(get('theme')->is_index()){
+			return get('theme')->site_title(false);
+		}
+		elseif(!get('theme')->is_forum() && !get('theme')->is_thread()){
+			get('debug')->logError('OsimoData','events','Attempting to build breadcrumb trail on non-applicable page, returning false');
+			return false;
+		}
+		
+		$trail = array();
+		if(get('theme')->is_thread()){
+			$trail[] = $this->thread_title(false);
+			$start_id = $this->the_thread->forum;
+		}
+		else{
+			$start_id = get('osimo')->GET['id'];
+		}		
+
+		$result = get('db')->select('title,parent_forum')->from('forums')->where('id=%d',$start_id)->row();
+		$trail[] = '<a href="forum.php?id='.$start_id.'">'.$result['title'].'</a>';
+		while($result != false & $result['parent_forum'] != 0){
+			$cur_id = $result['parent_forum'];
+			$result = get('db')->select('title,parent_forum')->from('forums')->where('id=%d',$cur_id)->row();
+			$trail[] = '<a href="forum.php?id='.$cur_id.'">'.$result['title'].'</a>';
+		}
+		
+		$trail[] = '<a href="index.php">'.get('theme')->site_title(false).'</a>';
+		$trail = array_reverse($trail);
+		get('debug')->logMsg('OsimoData','events',"Breadcrumb trail built, results: \n".print_r($trail,true));
+		return $trail;
 	}
 }
 ?>

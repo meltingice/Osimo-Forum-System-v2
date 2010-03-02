@@ -6,7 +6,9 @@
 <? get('theme')->include_header(); ?>
 
 <div id="content">
-	
+	<div id="breadcrumb_trail">
+		<? get('data')->breadcrumb_trail(' &raquo; '); ?>
+	</div>
 	<? /* First output forums */ ?>
 	<? if(get('data')->are_categories()): while(get('data')->has_categories()): if(get('data')->are_forums()): ?>
 		

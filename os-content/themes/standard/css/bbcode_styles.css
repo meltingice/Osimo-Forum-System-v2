@@ -1,0 +1,8 @@
+.thread_post_content a{
+	color: #1D3652;
+	font-weight: bold;
+}
+
+.thread_post_content a:hover{
+	color: #3F956B;
+}

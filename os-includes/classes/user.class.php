@@ -56,15 +56,24 @@ class OsimoUser{
 		$this->email = false;
 		$this->is_guest = true;
 		$this->ip_address = $_SERVER['REMOTE_ADDR'];
-		$this->time_format = 'M j, Y g:ia';
+		$this->time_format = 'M j, Y';
 	}
 	
 	private function loadBasicInfo($id){
 		get('debug')->logMsg('OsimoUser','events','Loading information for user ID #'.$id);
-		$user = get('db')->select('id,username')->from('users')->where('id=%d',$id)->row(true,86400);
+		$loadInfo = array(
+			'id','username',
+			'email','ip_address',
+			'signature','posts',
+			'is_admin','is_global_mod',
+			'time_joined'
+		);
+		$user = get('db')->select($loadInfo)->from('users')->where('id=%d',$id)->row(true,86400);
 		foreach($user as $key=>$val){
 			$this->$key = $val;
 		}
+		
+		$this->time_joined = date(get('user')->time_format,strtotime($this->time_joined));
 	}
 	
 	private function init(){
@@ -138,6 +147,12 @@ class OsimoUser{
 	
 	public function is_logged_in(){
 		return ($this->id != 0);
+	}
+	
+	public function date_format($date,$inc_time=false){
+		if(!is_numeric($date)){ $date = strtotime($date); }
+		if($inc_time){ return date($this->time_format.' g:ia',$date); }
+		else{ return date($this->time_format,$date); }
 	}
 }
 ?>

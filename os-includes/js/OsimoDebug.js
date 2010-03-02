@@ -32,13 +32,13 @@ OsimoDebug.prototype.showPHPDebugInfoFirebug = function(){
 		if(info.msgs.length > 0){
 	    	console.log("OsimoDebug PHP: Messages");
 	    	$.each(info.msgs,function(i,msg){
-	    		console.info(msg);
+	    		console.info(decodeURIComponent(msg));
 	    	});
 	    }
 	    if(info.errors.length > 0){
 	    	console.log("OsimoDebug PHP: Errors");
 	    	$.each(info.errors,function(i,error){
-	    		console.error(error);
+	    		console.error(decodeURIComponent(error));
 	    	});
 	    }
 	}
@@ -61,14 +61,14 @@ OsimoDebug.prototype.showPHPDebugInfoHTML = function(){
 	if(info.msgs.length > 0){
 	    HTML += "<h2>Messages</h2><ul>";
 	    $.each(info.msgs,function(i,msg){
-	    	HTML += "<li><pre>"+msg+"</pre></li>";
+	    	HTML += "<li><pre>"+decodeURIComponent(msg)+"</pre></li>";
 	    });
 	    HTML += '</ul>';
 	}
 	if(info.errors.length > 0){
 	   HTML += "<h2>Errors</h2><ul>";
 	    $.each(info.errors,function(i,error){
-	    	HTML += "<li><pre>"+error+"</pre></li>";
+	    	HTML += "<li><pre>"+decodeURIComponent(error)+"</pre></li>";
 	    });
 	    HTML += '</ul>';
 	}	
