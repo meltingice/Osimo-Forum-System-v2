@@ -9,8 +9,6 @@ This is the second generation of the Osimo Forum System, which is a complete rew
 
 This version of Osimo takes advantage of object-oriented designed code and aims to make it much easier to develop themes for the front-end web developers out there who aren't as skilled in the ways of back-end code development (everyone enjoys cleaner code too).  It will continue to promote many "web 2.0 standards", but will do so in a much more orderly, consistent, and reliable manner through a cleanly defined Javascript API.
 
-Instead of intermixing PHP and HTML in a single file for theme code, this version of Osimo has a new template engine that parses HTML files to look for special template directives, which it then converts to PHP code and stores in a cache.  The cache is only updated when the template files are updated.
-
 This version of Osimo also has Memcache support from the start, and it will be getting other types of caches added as well in the future to improve performance for those who don't have the amazing Memcache system available to them.
 
 The installation and upgrading process will be much easier and much more streamlined.  Something I would like to attempt is automatic updates through an admin panel instead of having to manually download a ZIP file, connect to FTP, upload it to the web server, etc.
@@ -18,4 +16,6 @@ The installation and upgrading process will be much easier and much more streaml
 Last, but certainly not least, Osimo's new home is on GitHub.  After wrangling with SVN for awhile, I finally discovered the greatness that is Git and I have become a fan.  I'm sure any future projects of mine will also be hosted on GitHub.
 
 <h1>Theming System</h1>
-Osimo uses a theme engine that closely models Wordpress.  More on this soon...
+Osimo uses a theme engine that closely models Wordpress.  It uses a very state-ful PHP class to abstract iterating over much of the data in the forum.  Almost no PHP knowledge is required to make a theme, although some (minimal) experience is recommended.  Osimo uses a few special loops which can be copied from theme to theme since their functionality is so fundamental.
+
+More information on theming soon :)
