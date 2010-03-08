@@ -150,7 +150,12 @@ class Osimo{
 			$this->POST[$id] = $_POST[$id];
 		}
 		else{
-			$this->POST[$id] = $this->db->escape($_POST[$id]);		
+			if(get_magic_quotes_gpc()){
+				$this->POST[$id] = stripslashes($_POST[$id]);
+			}
+			else{
+				$this->POST[$id] = $_POST[$id];
+			}
 		}
 
 		return true;

@@ -97,3 +97,8 @@ OsimoDebug.prototype.hidePHPDebugger = function(){
 OsimoDebug.prototype.firebugEnabled = function(){
 	return (typeof console == 'object' && typeof console.log == 'function');
 }
+
+OsimoDebug.prototype.showError = function(msg, width, height){
+	var modal = new OsimoModal({width: width, height : height, styles : {'text-align' : 'center'}});
+	modal.setTitle('Osimo Error').setContent(msg).show();
+}
