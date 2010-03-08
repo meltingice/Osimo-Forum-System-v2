@@ -51,6 +51,9 @@ class OsimoDB extends OsimoModule{
 			$this->conn = @mysql_connect($this->db_host, $this->db_user, $this->db_pass) or die("Could not connect to database!");
 			$this->conn_db = @mysql_select_db($this->db_name)or die("Could not select database!");
 			get('debug')->logMsg('OsimoDB','events','Opening database connection...');
+			
+			$status = explode('  ', mysql_stat());
+			get('debug')->logMsg('OsimoDB','events',"Current database status:\n".print_r($status,true));
 		}
 	}
 	

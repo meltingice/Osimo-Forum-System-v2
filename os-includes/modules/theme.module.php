@@ -144,7 +144,7 @@ class OsimoTheme extends OsimoModule{
 		if(!$this->title){ $this->auto_title(); }
 		
 		$html = "<title>".$this->title." - Powered by Osimo</title>\n";
-		$html = "<meta http-equiv=\"x-ua-compatible\" content=\"IE=8\">\n";
+		$html .= "<meta http-equiv=\"x-ua-compatible\" content=\"IE=8\">\n";
 		foreach($this->js as $js){
 			$html .= "<script src=\"".$js."\"></script>\n";
 		}
@@ -237,6 +237,14 @@ class OsimoTheme extends OsimoModule{
 				});
 			</script>
 		";
+	}
+	
+	public function post_submit(){
+		echo "osimo.submitPost()";
+	}
+	
+	public function post_preview(){
+		echo "osimo.previewPost()";
 	}
 	
 	public function include_contents($filename){

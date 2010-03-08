@@ -176,20 +176,18 @@ class Osimo{
 		}
 	}
 	
-	
-	
 	public static function loadIncludes($siteFolder){
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/osimo_module.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/osimo_dynamic.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/classes/user.class.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/classes/osimomodel.class.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/classes/bbparser.class.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/debug.module.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/paths.module.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/db2.module.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/cache.module.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/theme.module.php');
-		include_once($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/data.module.php');
+		require($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/osimo_module.php');
+		require($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/osimo_dynamic.php');
+		require($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/classes/user.class.php');
+		require($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/classes/osimomodel.class.php');
+		require($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/classes/bbparser.class.php');
+		require($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/debug.module.php');
+		require($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/paths.module.php');
+		require($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/db2.module.php');
+		require($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/cache.module.php');
+		require($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/theme.module.php');
+		require($_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/data.module.php');
 	}
 	
 	/* Dynamicly loaded objects */
@@ -212,7 +210,7 @@ class Osimo{
 	private function initDynamicObj($args,$Class,$file){
 		if(!class_exists($Class) && file_exists(ABS_INC_CLASSES.$file.'.class.php')){
 			get('debug')->logMsg('Osimo','object_creation',"Including {$file}.class.php in order to create $Class object.");
-			include_once(ABS_INC_CLASSES.$file.'.class.php');
+			include(ABS_INC_CLASSES.$file.'.class.php');
 		}
 		elseif(!file_exists(ABS_INC_CLASSES.$file.'.class.php')){
 			get('debug')->error("OsimoCore: unable to locate class file '$file.class.php'",__LINE__,__FUNCTION__,__FILE__,true);
@@ -274,4 +272,37 @@ function get($class){
 	
 	return false;
 }
+
+/*
+function __autoload($class){
+	$classes = array(
+		'OsimoBBParser'=>'bbparser',
+		'OsimoForum'=>'forum',
+		'OsimoModel'=>'osimomodel',
+		'OsimoPost'=>'post',
+		'OsimoThread'=>'thread',
+		'OsimoUser'=>'user'
+	);
+	$modules = array(
+		'OsimoCache'=>'cache',
+		'OsimoData'=>'data',
+		'OsimoDB'=>'db2',
+		'OsimoDebug'=>'debug',
+		'OsimoPaths'=>'paths',
+		'OsimoTheme'=>'theme'
+	);
+	
+	if(array_key_exists($class,$classes)){
+		$inc = ABS_INC_CLASSES.$classes[$class].'.class.php';
+	}
+	elseif(array_key_exists($class,$modules)){
+		$inc = ABS_INC_MODULES.$modules[$class].'.module.php';
+	}
+	else{
+		$inc = ABS_INC.strtolower(str_replace(' ','_',$class)).'.php';
+	}
+	
+	include_once($inc);
+}
+*/
 ?>
