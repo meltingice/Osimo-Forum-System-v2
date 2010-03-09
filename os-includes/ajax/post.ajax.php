@@ -29,6 +29,13 @@ class OsimoAjaxPost extends OsimoAjax{
 		$result = get('osimo')->post($data)->create($post);
 		if($result){
 			get('user')->increase_post_count();
+			get('db')->update('threads')->set(array('posts'=>'posts+1'))->where('id=%d',$data['thread'])->limit(1)->update();
+			get('db')->
+				update('forums')->
+				set(array('posts'=>'posts+1'))->
+				where('id=(SELECT forum FROM threads WHERE id=%d LIMIT 1)',$data['thread'])->
+				limit(1)->
+				update();
 		
 			if(get('theme')->is_ajax_capable()){
 				get('data')->do_standard_loop();
