@@ -49,7 +49,7 @@ class OsimoData extends OsimoModule{
 		}
 	}
 	
-	public function load_thread_list($args=false,$page=1){
+	public function load_thread_list($args=false){
 		if(!$args){
 			if(get('theme')->is_forum()){
 				$args = 'forum='.get('osimo')->GET['id'];
@@ -65,6 +65,8 @@ class OsimoData extends OsimoModule{
 		
 		$args = Osimo::validateOQLArgs($args,$allowed,true);
 		isset(get('osimo')->config['thread_num_per_page']) ? $num = get('osimo')->config['thread_num_per_page'] : $num = 20;
+		isset(get('osimo')->GET['page']) ? $page = get('osimo')->GET['page'] : $page = 1;
+		
 		$limit = get('osimo')->getPageLimits($page,$num);
 		$result = get('db')->select('*')->from('threads')->where(implode(' AND ',$args))->order_by('last_post_time','DESC')->limit($limit['start'],$limit['num'])->rows();
 		if($result){
@@ -91,6 +93,8 @@ class OsimoData extends OsimoModule{
 		$args = Osimo::validateOQLArgs($args,$allowed,true);
 
 		isset(get('osimo')->config['post_num_per_page']) ? $num = get('osimo')->config['post_num_per_page'] : $num = 10;
+		isset(get('osimo')->GET['page']) ? $page = get('osimo')->GET['page'] : $page = 1;
+		
 		$limit = get('osimo')->getPageLimits($page,$num);
 		$result = get('db')->select('*')->from('posts')->where(implode(' AND ',$args))->order_by('id','ASC')->limit($limit['start'],$limit['num'])->rows();
 		if($result){
@@ -102,6 +106,9 @@ class OsimoData extends OsimoModule{
 			if($result){
 				$this->the_thread = get('osimo')->thread($result);
 			}
+		}
+		elseif(get('theme')->page_type != 'index'){
+			header('Location: index.php'); exit;
 		}
 	}
 	
@@ -194,6 +201,7 @@ class OsimoData extends OsimoModule{
 	}
 	
 	public function the_forum($field=false,$echo=true){
+		if(!is_object($this->the_forum)){ return false; }
 		if(!$field){ return $this->the_forum; }
 		if($echo){ echo $this->the_forum->get($field); } else { return $this->the_forum->get($field); }
 		
@@ -201,6 +209,7 @@ class OsimoData extends OsimoModule{
 	}
 	
 	public function the_thread($field=false,$echo=true){
+		if(!is_object($this->the_thread)){ return false; }
 		if(!$field){ return $this->the_thread; }
 		if($echo){ echo $this->the_thread->get($field); } else { return $this->the_thread->get($field); }
 		
@@ -208,6 +217,7 @@ class OsimoData extends OsimoModule{
 	}
 	
 	public function the_post($field=false,$echo=true){
+		if(!is_object($this->the_post)){ return false; }
 		if($field == 'poster_link'){
 			if($echo){ echo $this->post_user->profile_link(); return true; } else { return $this->post_user->profile_link(); }
 		}
@@ -229,11 +239,11 @@ class OsimoData extends OsimoModule{
 	}
 	
 	public function thread_title($echo=true){
-		if($echo){ echo $this->the_thread->get('title'); } else{ return $this->the_thread->get('title'); }
+		return $this->the_thread('title',$echo);
 	}
 	
 	public function thread_description($echo=true){
-		if($echo){ echo $this->the_thread->get('description'); } else{ return $this->the_thread->get('description'); }
+		return $this->the_thread('description',$echo);
 	}
 	
 	public function the_forum_link(){

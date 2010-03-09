@@ -34,5 +34,16 @@ class OsimoAjax{
 		
 		exit;
 	}
+	
+	protected function json_error($data){
+		if(is_array($data)){
+			echo json_encode($data);
+		}
+		else{
+			echo json_encode(array("error"=>$data));
+		}
+		
+		exit;
+	}
 }
 ?>

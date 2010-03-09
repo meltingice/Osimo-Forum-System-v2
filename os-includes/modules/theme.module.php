@@ -202,6 +202,17 @@ class OsimoTheme extends OsimoModule{
 		return false;
 	}
 	
+	public function is_ajax_capable($page_type=false){
+		if($page_type == 'thread' || $this->page_type == 'thread'){
+			return file_exists(ABS_THEME.'singlepost.php');
+		}
+		elseif($page_type == 'forum' || $this->page_type == 'forum'){
+			return file_exists(ABS_THEME.'singlethread.php');
+		}
+		
+		return false;
+	}
+	
 	public function login_username_css_id($echo=true){
 		$var = "osimo_username";
 		if($echo){ echo $var; } else { return $var; }

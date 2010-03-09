@@ -87,7 +87,7 @@ class OsimoUser{
 		if($this->ip_address != $_SERVER['REMOTE_ADDR']){
 			get('debug')->logMsg('OsimoUsers','events','User logging in from new IP, updating database...');
 			get('db')->update('users')
-				->set(array('ip_address'=>$_SERVER['REMOTE_ADDR']))
+				->set(array('ip_address'=>"'".$_SERVER['REMOTE_ADDR']."'"))
 				->where('id=%d',$this->id)
 				->limit(1)
 			->update();
@@ -109,14 +109,20 @@ class OsimoUser{
 		
 		$result = get('db')->update('users')
 			->set(array(
-				'last_page'=>$last_page,
-				'last_page_type'=>$page_type,
-				'time_last_visit'=>$last_visit
+				'last_page'=>"'$last_page'",
+				'last_page_type'=>"'$page_type'",
+				'time_last_visit'=>"'$last_visit'"
 			))
 			->where('id=%d',$this->id)
 			->limit(1)
 		->update();
 		
+		if($result){ return true; }
+		return false;
+	}
+	
+	public function increase_post_count(){
+		$result = get('db')->update('users')->set(array('posts'=>'posts+1'))->where('id=%d',$this->id)->limit(1)->update();
 		if($result){ return true; }
 		return false;
 	}

@@ -16,7 +16,8 @@
 	<div class="thread_post">
 		<div class="thread_post_wrap">
 			<div class="thread_post_header">
-				<p><img src="<?=URL_THEME?>img/user_green.png" /> <? get('data')->the_post('poster_link'); ?></p>
+				<p class="post_author"><img src="<?=URL_THEME?>img/user_green.png" /> <? get('data')->the_post('poster_link'); ?></p>
+				<p class="post_time">Posted <? get('data')->the_post('post_time'); ?></p>
 			</div>
 			<div class="thread_post_info">
 				<div class="thread_post_avatar"><img src="<? get('data')->the_avatar_url(); ?>" /></div>

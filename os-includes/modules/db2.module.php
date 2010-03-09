@@ -224,7 +224,7 @@ class OsimoDBQuery{
 		if(is_array($args)){
 			$temp = array();
 			foreach($args as $field=>$val){
-				$temp[] = $field."='".$val."'";
+				$temp[] = $field."=".$val."";
 			}
 			
 			$this->fields = implode(",",$temp);

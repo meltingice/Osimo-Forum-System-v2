@@ -123,6 +123,14 @@ class Osimo{
 		return true;
 	}
 	
+	public function optionalGET($id,$numeric=false){
+		if(isset($_GET[$id])){
+			return $this->requireGET($id,$numeric);
+		}
+		
+		return false;
+	}
+	
 	public function requirePOST($id,$numeric=false,$redirect='index.php'){
 		if(!isset($_POST[$id])){
 			if($this->theme->page_type == 'index' || !$redirect){
@@ -159,6 +167,14 @@ class Osimo{
 		}
 
 		return true;
+	}
+	
+	public function optionalPOST($id,$numeric=false){
+		if(isset($_POST[$id])){
+			return $this->requirePOST($id,$numeric);
+		}
+		
+		return false;
 	}
 	
 	public function options($module){
