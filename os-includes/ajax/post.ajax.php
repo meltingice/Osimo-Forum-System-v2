@@ -28,11 +28,13 @@ class OsimoAjaxPost extends OsimoAjax{
 		
 		$result = get('osimo')->post($data)->create($post);
 		if($result){
-			if(get('theme')->is_ajax_capable()){
-				get('data')->do_standard_loop();
+			$loc = $post->location();
+			if(get('theme')->is_ajax_capable('thread')){
+				$html = get('data')->do_standard_loop('thread',$loc['thread'],$loc['page'],false);
+				$this->json_return(array("html"=>$html,"location"=>$loc));
 			}
 			else{
-				$this->json_return(array("refresh"=>true,"location"=>$post->location()));
+				$this->json_return(array("refresh"=>true,"location"=>$loc));
 			}
 		}
 		else{

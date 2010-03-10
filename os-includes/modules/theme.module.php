@@ -204,10 +204,10 @@ class OsimoTheme extends OsimoModule{
 	
 	public function is_ajax_capable($page_type=false){
 		if($page_type == 'thread' || $this->page_type == 'thread'){
-			return file_exists(ABS_THEME.'singlepost.php');
+			return file_exists(ABS_THEME.'single_post.php');
 		}
 		elseif($page_type == 'forum' || $this->page_type == 'forum'){
-			return file_exists(ABS_THEME.'singlethread.php');
+			return file_exists(ABS_THEME.'single_thread.php');
 		}
 		
 		return false;
@@ -260,7 +260,7 @@ class OsimoTheme extends OsimoModule{
 	}
 	
 	public function include_contents($filename){
-		$osimo = $this->osimo;
+		$osimo = get('osimo'); //pull the osimo object into this scope just in case
 
 		if (is_file($filename)) {
 			ob_start();

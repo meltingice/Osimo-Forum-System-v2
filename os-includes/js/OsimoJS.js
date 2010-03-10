@@ -42,6 +42,9 @@ OsimoJS.prototype.submitPost = function(){
 					window.location.reload();
 				}
 			}
+			else{
+				$("#OsimoPosts").html(data.html);
+			}
 		}
 	});
 }

@@ -76,7 +76,7 @@ class OsimoData extends OsimoModule{
 		}
 	}
 	
-	public function load_post_list($args=false,$page=1){
+	public function load_post_list($args=false,$page=false){
 		if(!$args){
 			if(get('theme')->is_thread()){
 				$args = 'thread='.get('osimo')->GET['id'];
@@ -93,7 +93,9 @@ class OsimoData extends OsimoModule{
 		$args = Osimo::validateOQLArgs($args,$allowed,true);
 
 		isset(get('osimo')->config['post_num_per_page']) ? $num = get('osimo')->config['post_num_per_page'] : $num = 10;
-		isset(get('osimo')->GET['page']) ? $page = get('osimo')->GET['page'] : $page = 1;
+		if(!$page){
+			isset(get('osimo')->GET['page']) ? $page = get('osimo')->GET['page'] : $page = 1;
+		}
 		
 		$limit = get('osimo')->getPageLimits($page,$num);
 		$result = get('db')->select('*')->from('posts')->where(implode(' AND ',$args))->order_by('id','ASC')->limit($limit['start'],$limit['num'])->rows();
@@ -114,6 +116,55 @@ class OsimoData extends OsimoModule{
 	
 	private function load_category_info($catID){
 		return get('db')->select('*')->from('categories')->where("id=%d",$catID)->row(true);
+	}
+	
+	public function do_standard_loop($type=false,$id=false,$page=false,$echo=true){
+		if($type == false){
+			if(isset(get('theme')->page_type)){
+				$type = get('theme')->page_type;
+			}
+			else{
+				return false;
+			}
+		}
+
+		if($id == false){
+			if(is_numeric(get('osimo')->GET['id'])){
+				$id = get('osimo')->GET['id'];
+			}
+			else{
+				return false;
+			}
+		}
+		
+		$html = '';
+		
+		if($type == 'thread'){
+			$this->load_post_list("thread=$id",$page);
+			if($echo){ echo '<div id="OsimoPosts">'; } else { $html .= '<div id="OsimoPosts">'; }
+			if($this->are_posts()){ while($this->has_posts()){
+				if($echo){
+					include(ABS_THEME.'single_post.php');
+				}
+				else{
+					$html .= get('theme')->include_contents(ABS_THEME.'single_post.php');
+				}
+			} }
+			if($echo){ echo '</div>'; } else { $html .= '</div>'; }
+		}
+		elseif($type == 'forum'){
+			
+		}
+		else{
+			return false;
+		}
+		
+		if($echo){
+			return true;
+		}
+		else{
+			return $html;
+		}
 	}
 	
 	public function are_categories(){
