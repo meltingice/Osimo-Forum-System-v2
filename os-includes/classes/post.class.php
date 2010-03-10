@@ -73,6 +73,37 @@ class OsimoPost{
 		if($result){
 			$this->id = $postID;
 			$post = $this;
+			
+			get('user')->increase_post_count();
+			get('db')->
+				update('threads')->
+				set(
+					array(
+						'posts'=>'posts+1',
+						'last_poster'=>"'".get('user')->username."'",
+						'last_poster_id'=>"'".get('user')->id."'",
+						'last_post_time'=>"'".get('db')->formatDateForDB()."'"
+					)
+				)->
+				where('id=%d',$this->thread)->
+				limit(1)->
+				update();
+				
+			get('db')->
+				update('forums')->
+				set(
+					array(
+						'posts'=>'posts+1',
+						'last_thread_id'=>$this->thread,
+						'last_poster'=>"'".get('user')->username."'",
+						'last_poster_id'=>"'".get('user')->id."'",
+						'last_post_time'=>"'".get('db')->formatDateForDB()."'"
+					)
+				)->
+				where('id=(SELECT forum FROM threads WHERE id=%d LIMIT 1)',$this->thread)->
+				limit(1)->
+				update();
+				
 			return true;
 		}
 		else{

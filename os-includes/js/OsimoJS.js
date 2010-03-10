@@ -38,7 +38,9 @@ OsimoJS.prototype.submitPost = function(){
 			
 			if(data.refresh){
 				window.location.href = "thread.php?id="+data.location.thread+"&page="+data.location.page+"#post_"+data.location.post;
-				window.location.reload();
+				if(that.getPageNum() == data.location.page){
+					window.location.reload();
+				}
 			}
 		}
 	});
@@ -53,15 +55,23 @@ OsimoJS.prototype.processPostData = function(postData, dest, trigger){
 }
 
 OsimoJS.prototype.getPageID = function(){
+	return this.getURLToken('id');
+}
+
+OsimoJS.prototype.getPageNum = function(){
+	return this.getURLToken('page');
+}
+
+OsimoJS.prototype.getURLToken = function(tok){
 	var url = window.location.search.substring(1).split('&');
-	var id = false;
+	var result = false;
 	$.each(url,function(i,val){
 		var query = val.split('=');
-		if(query[0] == 'id'){
-			 id = query[1];
+		if(query[0] == tok){
+			 result = query[1];
 			 return true;
 		}
 	});
 	
-	return id;
+	return result;
 }
