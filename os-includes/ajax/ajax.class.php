@@ -4,6 +4,7 @@ class OsimoAjax{
 	
 	function OsimoAjax(){
 		$this->triggers = array();
+		get('osimo')->ajax_mode = true;
 	}
 	
 	protected function register($triggers){

@@ -110,7 +110,6 @@ OsimoJS.prototype.isForum = function(){
 
 OsimoJS.prototype.enableHashChangeEvent = function(){
 	this.hashChangeEnabled = true;
-	return true;
 }
 
 OsimoJS.prototype.disableHashChangeEvent = function(){

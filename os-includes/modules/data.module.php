@@ -141,7 +141,11 @@ class OsimoData extends OsimoModule{
 		
 		if($type == 'thread'){
 			$this->load_post_list("thread=$id",$page);
-			if($echo){ echo '<div id="OsimoPosts">'; } else { $html .= '<div id="OsimoPosts">'; }
+			
+			if(!get('osimo')->ajax_mode){
+				if($echo){ echo '<div id="OsimoPosts">'; } else { $html .= '<div id="OsimoPosts">'; }
+			}
+			
 			if($this->are_posts()){ while($this->has_posts()){
 				if($echo){
 					include(ABS_THEME.'single_post.php');
@@ -150,10 +154,30 @@ class OsimoData extends OsimoModule{
 					$html .= get('theme')->include_contents(ABS_THEME.'single_post.php');
 				}
 			} }
-			if($echo){ echo '</div>'; } else { $html .= '</div>'; }
+			
+			if(!get('osimo')->ajax_mode){
+				if($echo){ echo '</div>'; } else { $html .= '</div>'; }
+			}
 		}
 		elseif($type == 'forum'){
+			$this->load_thread_list("forum=$id",$page);
 			
+			if(!get('osimo')->ajax_mode){
+				if($echo){ echo '<div id="OsimoThreads">'; } else { $html .= '<div id="OsimoThreads">'; }
+			}
+			
+			while($this->has_threads()){
+				if($echo){
+					include(ABS_THEME.'single_thread.php');
+				}
+				else{
+					$html .= get('theme')->include_contents(ABS_THEME.'single_thread.php');
+				}
+			}
+			
+			if(!get('osimo')->ajax_mode){
+				if($echo){ echo '</div>'; } else { $html .= '</div>'; }
+			}
 		}
 		else{
 			return false;
@@ -322,16 +346,27 @@ class OsimoData extends OsimoModule{
 	}
 	
 	public function num_pages($type=false,$id=false){
-		if(!isset($this->num_pages)){
-			if($type == 'thread' || get('theme')->page_type == 'thread'){
-				if($id == false){ $id = get('osimo')->GET['id']; }
-				$posts = get('db')->select('COUNT(*)')->from('posts')->where('thread=%d',$id)->limit(1)->cell();
-				isset(get('osimo')->config['post_num_per_page']) ? $num = get('osimo')->config['post_num_per_page'] : $num = 10;
-				$this->num_pages = ceil($posts / $num);
-			}
+		if($id == false){ $id = get('osimo')->GET['id']; }
+		if($type == 'thread' || get('theme')->page_type == 'thread'){
+		    if(!isset($this->num_post_pages)){
+		    	$posts = get('db')->select('COUNT(*)')->from('posts')->where('thread=%d',$id)->limit(1)->cell();
+		    	isset(get('osimo')->config['post_num_per_page']) ? $num = get('osimo')->config['post_num_per_page'] : $num = 10;
+		    	$this->num_post_pages = ceil($posts / $num);
+		    }
+		    
+		    return $this->num_post_pages;
+		}
+		elseif($type == 'forum' || get('theme')->page_type == 'forum'){
+		    if(!isset($this->num_thread_pages)){
+		    	$threads = get('db')->select('COUNT(*)')->from('threads')->where('forum=%d',$id)->limit(1)->cell();
+		    	isset(get('osimo')->config['thread_num_per_page']) ? $num = get('osimo')->config['thread_num_per_page'] : $num = 10;
+		    	$this->num_thread_pages = ceil($threads / $num);
+		    }
+		    
+		    return $this->num_thread_pages;
 		}
 		
-		return $this->num_pages;
+		return false;
 	}
 	
 	public function breadcrumb_trail($sep=' &raquo; ',$echo=true){

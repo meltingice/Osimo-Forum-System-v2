@@ -43,7 +43,11 @@
 	<? endif; endwhile; endif; ?>
 	
 	<? /* Now lets output threads */ ?>
-	<? if(get('data')->are_threads()): ?>		
+	<? if(get('data')->are_threads()): ?>
+		<div class="post_page_list">
+			(<? get('theme')->num_pages(); ?> pages)
+			<? get('theme')->preset_pagination(); ?>
+		</div>	
 		<div class="category_title">
 			<h1>Threads</h1>
 		</div>

@@ -67,9 +67,13 @@ OsimoJS.prototype.loadPage = function(page){
 			
 			if(that.isThread()){
 				$("#OsimoPosts").html(data.html);
-				that.updatePagination(data.pagination,page);
-				that.updatePageHash(page);
 			}
+			else if(that.isForum()){
+				$("#OsimoThreads").html(data.html);
+			}
+			
+			that.updatePagination(data.pagination,page);
+			that.updatePageHash(page);
 		}
 	});
 }

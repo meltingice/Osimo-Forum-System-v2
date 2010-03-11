@@ -1,8 +1,8 @@
 <?
 class Osimo{
-	public $user,$config;
+	public $user,$config,$ajax_mode;
 	public $db,$cache,$paths,$theme,$debug,$bbparser;
-	private $defaults,$allowOptMod;
+	private $defaults,$allowOptMod,$globals;
 	private $cacheOptions,$dbOptions,$debugOptions,$themeOptions,$disableDebug,$debugVisibility;
 	public $GET,$POST;
 	
@@ -240,6 +240,20 @@ class Osimo{
 		
 		get('debug')->logMsg('Osimo','object_creation',"Dynamically creating object $Class with arguments: \n".print_r($args,true));
 		return new $Class($args);
+	}
+	
+	public function globals($name,$set=null){
+		if(is_null($set)){
+			if(isset($this->globals[$name])){
+				return $this->globals[$name];
+			}
+			
+			return null;
+		}
+		else{
+			$this->globals[$name] = $set;
+			return true;
+		}
 	}
 	
 	public static function validateOQLArgs($args,$allowed,$escape=false){
