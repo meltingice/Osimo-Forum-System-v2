@@ -38,7 +38,7 @@ OsimoDebug.prototype.showPHPDebugInfoFirebug = function(){
 	    if(info.errors.length > 0){
 	    	console.log("OsimoDebug PHP: Errors");
 	    	$.each(info.errors,function(i,error){
-	    		console.error(decodeURIComponent(error));
+	    		console.warn(decodeURIComponent(error));
 	    	});
 	    }
 	}

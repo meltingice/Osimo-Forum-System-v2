@@ -12,8 +12,10 @@ class OsimoData extends OsimoModule{
 	
 	function OsimoData(){
 		parent::OsimoModule();
-		$this->defaults = array(
-			
+		get('debug')->register('OsimoData',
+			array(
+				'events'=>false
+			)
 		);
 		
 		$this->init();
@@ -49,7 +51,7 @@ class OsimoData extends OsimoModule{
 		}
 	}
 	
-	public function load_thread_list($args=false){
+	public function load_thread_list($args=false,$page=false){
 		if(!$args){
 			if(get('theme')->is_forum()){
 				$args = 'forum='.get('osimo')->GET['id'];
@@ -65,7 +67,9 @@ class OsimoData extends OsimoModule{
 		
 		$args = Osimo::validateOQLArgs($args,$allowed,true);
 		isset(get('osimo')->config['thread_num_per_page']) ? $num = get('osimo')->config['thread_num_per_page'] : $num = 20;
-		isset(get('osimo')->GET['page']) ? $page = get('osimo')->GET['page'] : $page = 1;
+		if(!$page){
+			isset(get('osimo')->GET['page']) ? $page = get('osimo')->GET['page'] : $page = 1;
+		}
 		
 		$limit = get('osimo')->getPageLimits($page,$num);
 		$result = get('db')->select('*')->from('threads')->where(implode(' AND ',$args))->order_by('last_post_time','DESC')->limit($limit['start'],$limit['num'])->rows();
@@ -73,6 +77,9 @@ class OsimoData extends OsimoModule{
 			foreach($result as $data){
 				$this->thread_tree[$data['id']] = $data;
 			}
+		}
+		else{
+			get('debug')->logError('OsimoData','events',"Invalid page number given");
 		}
 	}
 	
