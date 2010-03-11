@@ -101,11 +101,13 @@ OsimoJS.prototype.getURLToken = function(tok,useHash){
 }
 
 OsimoJS.prototype.isThread = function(){
-	return (window.location.pathname.indexOf('thread.php') != -1);
+	var split = window.location.pathname.split('/');
+	return (split[split.length-1] == 'thread.php');
 }
 
 OsimoJS.prototype.isForum = function(){
-	return (window.location.pathname.indexOf('forum.php') != -1);
+	var split = window.location.pathname.split('/');
+	return (split[split.length-1] == 'forum.php');
 }
 
 OsimoJS.prototype.enableHashChangeEvent = function(){
