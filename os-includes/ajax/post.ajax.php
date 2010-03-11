@@ -31,7 +31,8 @@ class OsimoAjaxPost extends OsimoAjax{
 			$loc = $post->location();
 			if(get('theme')->is_ajax_capable('thread')){
 				$html = get('data')->do_standard_loop('thread',$loc['thread'],$loc['page'],false);
-				$this->json_return(array("html"=>$html,"location"=>$loc));
+				$pagination = get('theme')->pagination_numbers('thread',$loc['thread'],$loc['page']);
+				$this->json_return(array("html"=>$html,"location"=>$loc,"pagination"=>$pagination));
 			}
 			else{
 				$this->json_return(array("refresh"=>true,"location"=>$loc));

@@ -36,6 +36,7 @@ class OsimoTheme extends OsimoModule{
 			$this->add_javascript(URL_JS.'OsimoDebug.js',false);
 		}
 		$this->add_javascript(URL_JS.'OsimoJS.js',false);
+		$this->add_javascript(URL_JS.'OsimoAjax.js',false);
 		$this->add_javascript(URL_JS.'OsimoModal.js',false);
 		
 		$this->add_stylesheet(URL_DEFAULT_CONTENT.'css/styles.css',false);
@@ -152,6 +153,13 @@ class OsimoTheme extends OsimoModule{
 		foreach($this->css as $css){
 			$html .= "<link rel=\"stylesheet\" href=\"".$css."\" type=\"text/css\" media=\"screen\" />\n";
 		}
+		
+		$html .= "
+		<script type='text/javascript'>
+			var osimo = new OsimoJS({
+				'debug' : true
+			});
+		</script>";
 
 		if($echo){ echo $html; }
 		return $html;
@@ -257,6 +265,88 @@ class OsimoTheme extends OsimoModule{
 	
 	public function post_preview(){
 		echo "osimo.previewPost()";
+	}
+	
+	public function num_pages(){
+		echo '<span class="OsimoNumPages">'.get('data')->num_pages().'</span>';
+	}
+	
+	public function preset_pagination($before=' ', $after=' ', $page_type=false, $page=false){
+		if(!$page){
+			isset(get('osimo')->GET['page']) ? $page = get('osimo')->GET['page'] : $page = 1;
+		}
+		
+		$pages = $this->pagination_numbers($page);
+		
+		if(!$page_type && isset($this->page_type)){
+			$page_type = $this->page_type;
+		}
+		
+		$ajax = $this->is_ajax_capable($page_type);
+		
+		echo "<span class='OsimoPaginationWrap'>";
+		if($pages['first']){
+			echo '<span class="OsimoPagination" onclick="';
+			if($ajax){
+				echo 'osimo.loadPage(1)';
+			}
+			else{
+				echo "window.location.href='".$page_type.".php?id=".get('osimo')->GET['id']."&page=1'";
+			}
+			echo '">First</span>'.$after.$before;
+		}
+		for($i = $pages['start']; $i <= $pages['end']; $i++){
+			if($i != $pages['start']){ echo $before; }
+			echo '<span class="OsimoPagination OsimoPaginationPage_'.$i;
+			if($i == $page){ echo ' OsimoPaginationActivePage'; }
+			echo '" onclick="';
+			if($ajax){
+				echo 'osimo.loadPage('.$i.')';
+			}
+			else{
+				echo "window.location.href='".$page_type.".php?id=".get('osimo')->GET['id']."&page=$i'";
+			}
+			echo '">'.$i.'</span>';
+			if($i != $pages['end']){ echo $after; }
+		}
+		if($pages['last']){ echo $after.$before.'<span class="OsimoPagination" onclick="osimo.loadPage('.$pages['num'].')">Last</span>'; }
+		echo '</span>';
+	}
+	
+	public function pagination_numbers($type=false,$id=false,$page=false){
+		if(!$page){
+			isset(get('osimo')->GET['page']) ? $page = get('osimo')->GET['page'] : $page = 1;
+		}
+		
+		$pages['num'] = get('data')->num_pages($type,$id);
+		
+		if($pages['num'] <= 5){
+			$pages['start'] = 1;
+			$pages['end'] = $pages['num'];
+			$pages['first'] = false; $pages['last'] = false;
+		}
+		else{
+			if($page <= 3){
+				$pages['start'] = 1;
+				$pages['end'] = 5;
+				$pages['first'] = false;
+				$pages['last'] = true;
+			}
+			elseif($pages['num'] - $page <= 2){
+				$pages['start'] = $pages['num'] - 5 + 1;
+				$pages['end'] = $pages['num'];
+				$pages['first'] = true;
+				$pages['last'] = false;
+			}
+			else{
+				$pages['start'] = $page - 2;
+				$pages['end'] = $page + 2;
+				$pages['first'] = true;
+				$pages['last'] = true;
+			}
+		}
+		
+		return $pages;
 	}
 	
 	public function include_contents($filename){

@@ -321,6 +321,19 @@ class OsimoData extends OsimoModule{
 		if($echo){ echo $this->the_post->parse_post(); } else { return $this->the_post->parse_post(); }
 	}
 	
+	public function num_pages($type=false,$id=false){
+		if(!isset($this->num_pages)){
+			if($type == 'thread' || get('theme')->page_type == 'thread'){
+				if($id == false){ $id = get('osimo')->GET['id']; }
+				$posts = get('db')->select('COUNT(*)')->from('posts')->where('thread=%d',$id)->limit(1)->cell();
+				isset(get('osimo')->config['post_num_per_page']) ? $num = get('osimo')->config['post_num_per_page'] : $num = 10;
+				$this->num_pages = ceil($posts / $num);
+			}
+		}
+		
+		return $this->num_pages;
+	}
+	
 	public function breadcrumb_trail($sep=' &raquo; ',$echo=true){
 		$trail = $this->build_breadcrumb_trail();
 		if(!$trail){ return false; }

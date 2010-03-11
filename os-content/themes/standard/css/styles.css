@@ -221,6 +221,23 @@ body{
     color: #284B72;
 }
 
+.post_page_list{
+    margin: 0 0 5px 5px;
+    font-size: 13px;
+}
+
+.OsimoPagination{
+    border: 1px #b2b2b2 solid;
+    padding: 1px 3px 1px 3px;
+    color: #1D3652;
+    cursor: pointer;
+}
+
+.OsimoPaginationActivePage{
+    background-color: #1D3652 !important;
+    color: #f2f2f2 !important;
+}
+
 .thread_post_wrap{
     overflow: hidden;
 }

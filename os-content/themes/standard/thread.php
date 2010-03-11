@@ -8,6 +8,12 @@
 	<div id="breadcrumb_trail">
 		<? get('data')->breadcrumb_trail(' &raquo; '); ?>
 	</div>
+	
+	<div class="post_page_list">
+		(<? get('theme')->num_pages(); ?> pages)
+		<? get('theme')->preset_pagination(); ?>
+	</div>
+	
 	<div class="thread_title">
 		<h1><? get('data')->thread_title(); ?></h1>
 		<h2><? get('data')->thread_description(); ?></h2>
