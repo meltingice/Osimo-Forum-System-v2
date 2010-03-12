@@ -37,6 +37,7 @@ class OsimoTheme extends OsimoModule{
 		}
 		$this->add_javascript(URL_JS.'OsimoJS.js',false);
 		$this->add_javascript(URL_JS.'OsimoAjax.js',false);
+		$this->add_javascript(URL_JS.'OsimoUI.js',false);
 		$this->add_javascript(URL_JS.'OsimoModal.js',false);
 		
 		$this->add_stylesheet(URL_DEFAULT_CONTENT.'css/styles.css',false);
@@ -246,8 +247,8 @@ class OsimoTheme extends OsimoModule{
 		if($echo){ echo $var; } else { return $var; }
 	}
 	
-	public function osimo_editor($options=false,$pretext=''){
-		echo '<textarea id="OsimoPostbox">'.$pretext.'</textarea>';
+	public function osimo_editor($options=false,$pretext='',$css_id='OsimoPostbox'){
+		echo '<textarea id="#'.$css_id.'">'.$pretext.'</textarea>';
 		echo "
 			<script type=\"text/javascript\">
 				$(window).ready(function(){

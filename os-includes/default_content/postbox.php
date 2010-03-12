@@ -1,5 +1,7 @@
-<? get('theme')->osimo_editor(
-	array(
+<? 
+if(get('user')->is_logged_in()){
+	get('theme')->osimo_editor(
+		array(
 			'width'=>'100%',
 			'height'=>'400px',
 			'editorHeight'=>'300px',
@@ -8,5 +10,7 @@
 				'color'=>'#f2f2f2',
 				'font-family'=>'Arial, Helvetica, Verdana, sans-serif'
 			)
-		));
+		)
+	);
+}
 ?>

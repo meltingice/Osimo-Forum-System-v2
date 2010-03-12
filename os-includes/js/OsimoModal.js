@@ -2,15 +2,26 @@ function OsimoModal(options){
 	this.options = {
 		'width' : 500,
 		'height' : 400,
+		'title' : '',
+		'content' : '',
+		'autoShow' : false,
 		'modal' : true,
 		'draggable' : false,
+		'resizable' : false,
+		'onresize' : function(modal){ },
 		'showClose' : true,
 		'styles' : {}
 	};
 	
 	this.set(options);
-	this.content = '';
-	this.title = '';
+	this.content = this.options.content;
+	this.title = this.options.title;
+	this.height = this.options.height;
+	this.width = this.options.width;
+	
+	if(this.options.autoShow){
+		this.show();
+	}
 }
 
 OsimoModal.prototype.set = function(options){
@@ -59,6 +70,20 @@ OsimoModal.prototype.show = function(){
 			var coords = that.centerCoords();
 			$("#OsimoModalWrap").css({top:coords.y,left:coords.x});
 		});
+	}
+	
+	if(this.options.resizable){
+		var that = this;
+		$("#OsimoModalWrap").resizable({resize:function(){ that.onresize()}});
+	}
+}
+
+OsimoModal.prototype.onresize = function(){
+	this.height = $("#OsimoModalWrap").height();
+	this.width = $("#OsimoModalWrap").width();
+	
+	if($.isFunction(this.options.onresize)){
+		this.options.onresize(this);
 	}
 }
 

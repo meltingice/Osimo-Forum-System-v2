@@ -221,9 +221,59 @@ body{
     color: #284B72;
 }
 
+#thread_info{
+    overflow: hidden;
+    width: 100%;
+}
+
 .post_page_list{
-    margin: 0 0 5px 5px;
+    margin: 15px 0 5px 5px;
     font-size: 13px;
+    float: left;
+}
+
+.thread_actions{
+    float: right;
+    margin: 0 5px 5px 0;
+}
+
+.fancy_button{
+    background-color: #1D3652;
+    padding: 10px;
+    color: #f2f2f2;
+    font-size: 13px;
+    cursor: pointer;
+    background-image: -moz-linear-gradient(top, #243F5C, #10263F); /* FF3.6 */
+    background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, #10263F),color-stop(1, #243F5C)); /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#243F5C', endColorstr='#10263F'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#243F5C', endColorstr='#10263F')"; /* IE8 */
+    -moz-border-radius: 5px; /* FF1+ */
+    -webkit-border-radius: 5px; /* Saf3+, Chrome */
+    border-radius: 5px; /* Opera 10.5, IE 9 */
+}
+
+.fancy_button:hover{
+    background-image: -moz-linear-gradient(top, #3F5E7F, #23405F); /* FF3.6 */
+    background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, #23405F),color-stop(1, #3F5E7F)); /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#3F5E7F', endColorstr='#23405F'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#3F5E7F', endColorstr='#23405F')"; /* IE8 */
+}
+
+.fancy_button img{ vertical-align: text-bottom;}
+
+.fancy_button_disabled{
+    background-color: #d2d2d2;
+    padding: 10px;
+    color: #555555;
+    font-size: 13px;
+    border: 1px #b2b2b2 solid;
+    background-image: -moz-linear-gradient(top, #e2e2e2, #c8c8c8); /* FF3.6 */
+    background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, #c8c8c8),color-stop(1, #e2e2e2)); /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#e2e2e2', endColorstr='#c8c8c8'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#e2e2e2', endColorstr='#c8c8c8')"; /* IE8 */
+    -moz-border-radius: 5px; /* FF1+ */
+    -webkit-border-radius: 5px; /* Saf3+, Chrome */
+    border-radius: 5px; /* Opera 10.5, IE 9 */
 }
 
 .OsimoPagination{

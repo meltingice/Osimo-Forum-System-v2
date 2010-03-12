@@ -10,6 +10,9 @@ function OsimoJS(options){
 }
 
 OsimoJS.prototype.init = function(){
+	this.ui = new OsimoUI(this);
+	this.debug = new OsimoDebug(this.options.debug);
+	
 	if(this.isThread() || this.isForum()){
 		this.curPage = this.getPageNum();
 		if(this.getURLToken('page',true)){
@@ -21,10 +24,13 @@ OsimoJS.prototype.init = function(){
 			this.enableHashChangeEvent();
 		}
 	}
-	
-	this.debug = new OsimoDebug(this.options.debug);
 }
 
+/*
+ * Right now this assumes you are using spaces to separate
+ * the pagination.  Need to make a good way around this and 
+ * allow for more options
+ */
 OsimoJS.prototype.updatePagination = function(data,page){
 	$(".OsimoPaginationWrap").html(''); //first we clear out the old pagination
 	
