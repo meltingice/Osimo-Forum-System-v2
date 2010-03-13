@@ -1,9 +1,4 @@
-<?
-	get('data')->load_forum_list();
-	get('data')->load_thread_list();
-?>
-
-<? get('theme')->include_header(); ?>
+<?	get('theme')->include_header(); ?>
 
 <div id="content">
 	<div id="breadcrumb_trail">

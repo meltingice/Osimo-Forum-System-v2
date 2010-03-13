@@ -54,6 +54,15 @@ class OsimoTheme extends OsimoModule{
 		$this->auto_set_page_type($file);
 		get('user')->update_user_stats();
 		
+		/* Autoload some data based on what page is being viewed */
+		if($this->is_forum()){
+			get('data')->load_forum_list();
+			get('data')->load_thread_list();
+		}
+		elseif($this->is_thread()){
+			get('data')->load_post_list();
+		}
+		
 		$this->theme_file = $this->theme_path."/$file.php";
 		include($this->theme_file);
 	}
@@ -248,7 +257,7 @@ class OsimoTheme extends OsimoModule{
 	}
 	
 	public function osimo_editor($options=false,$pretext='',$css_id='OsimoPostbox'){
-		echo '<textarea id="#'.$css_id.'">'.$pretext.'</textarea>';
+		echo '<textarea id="'.$css_id.'">'.$pretext.'</textarea>';
 		echo "
 			<script type=\"text/javascript\">
 				$(window).ready(function(){

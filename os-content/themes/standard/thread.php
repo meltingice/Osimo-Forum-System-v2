@@ -1,5 +1,4 @@
 <?
-	get('data')->load_post_list();
 	get('theme')->add_stylesheet('css/bbcode_styles.css');
 	get('theme')->include_header();
 ?>
