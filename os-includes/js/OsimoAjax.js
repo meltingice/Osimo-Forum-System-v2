@@ -46,15 +46,27 @@ OsimoJS.prototype.submitPost = function(){
 }
 
 OsimoJS.prototype.createThread = function(){
-	var title = $("#OsimoCreateThreadTitle").attr('value');
+	var title = this.trim($("#OsimoCreateThreadTitle").attr('value'));
 	var desc = $("#OsimoCreateThreadDesc").attr('value');
-	var post = $("#OsimoCreateThread").osimoeditor('get');
+	var post = this.trim($("#OsimoCreateThread").osimoeditor('get'));
 	
 	if(title == ''){
-		this.ui.errorElement("#OsimoCreateThreadTitle");
+		this.ui.errorElement("#OsimoCreateThreadTitle",'keyup',function(osimo,element){
+			if(osimo.trim(element.attr('value')).length == 0){
+				return true;
+			}
+			
+			return false;
+		});
 	}
 	else if(post == ''){
-		
+		this.ui.errorElement("#OsimoCreateThread_editbox",'keyup',function(osimo,element){
+			if(osimo.trim(element.attr('value')).length == 0){
+				return true;
+			}
+			
+			return false;
+		});
 	}
 }
 

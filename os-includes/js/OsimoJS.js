@@ -104,3 +104,7 @@ OsimoJS.prototype.executeHashChangeEvent = function(){
 		osimo.loadPage(osimo.getPageNum());
 	}
 }
+
+OsimoJS.prototype.trim = function(str){
+	return str.replace(/^\s*/, "").replace(/\s*$/, "").replace(/\s{2,}/, " ");
+}

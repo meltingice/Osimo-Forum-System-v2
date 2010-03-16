@@ -20,19 +20,20 @@ OsimoUI.prototype.createThreadModal = function(){
 		resizable: true, 
 		onresize: function(modal){
 			$("#OsimoCreateThread_editbox").css({height : modal.height - 230});
+		},
+		onshow: function(modal){
+			$("#OsimoCreateThread").osimoeditor({
+				'width' : '100%',
+				'editorHeight' : '170px'
+			});
 		}
-	});
-	
-	$("#OsimoCreateThread").osimoeditor({
-		'width' : '100%',
-		'editorHeight' : '170px'
 	});
 }
 
 /*
  * Right now this assumes you are using spaces to separate
- * the pagination.  Need to make a good way around this and 
- * allow for more options
+ * the pagination. Need to make a good way around this and 
+ * allow for more options.
  */
 OsimoUI.prototype.updatePagination = function(data,page){
 	$(".OsimoPaginationWrap").html(''); //first we clear out the old pagination
@@ -57,6 +58,27 @@ OsimoUI.prototype.updatePagination = function(data,page){
 	if(data.last){
 		$(".OsimoPaginationWrap").append(before+'<span class="OsimoPagination" onclick="osimo.loadPage('+data.num+')">Last</span> ');
 	}
+}
+
+OsimoUI.prototype.errorElement = function(ele,event,condition){
+	var element = $(ele);
+	if(condition(this.osimo,element) == true){
+		if(!$(ele).hasClass('OsimoErrorElement')){
+			$(ele).addClass("OsimoErrorElement");
+			var that = this;
+			$(ele).live(event,function(){
+				that.errorElement(ele,event,condition);
+			});
+		}
+	}
+	else{
+		$(ele).removeClass('OsimoErrorElement');
+		$(ele).die(event);
+	}
+}
+
+OsimoUI.prototype.removeErrorElement = function(ele){
+	$(ele).removeClass(".OsimoErrorElement");
 }
 
 OsimoUI.prototype.HTML = {

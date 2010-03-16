@@ -9,6 +9,7 @@ function OsimoModal(options){
 		'draggable' : false,
 		'resizable' : false,
 		'onresize' : function(modal){ },
+		'onshow' : function(modal){ },
 		'showClose' : true,
 		'styles' : {}
 	};
@@ -76,6 +77,8 @@ OsimoModal.prototype.show = function(){
 		var that = this;
 		$("#OsimoModalWrap").resizable({resize:function(){ that.onresize()}});
 	}
+	
+	this.options.onshow(this);
 }
 
 OsimoModal.prototype.onresize = function(){

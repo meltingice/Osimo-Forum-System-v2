@@ -183,3 +183,10 @@
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#3F5E7F', endColorstr='#23405F'); /* IE6,IE7 */
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#3F5E7F', endColorstr='#23405F')"; /* IE8 */
 }
+
+.OsimoErrorElement{
+	background-image: url(../img/OsimoErrorElement.png) !important;
+	background-repeat: repeat !important;
+	background-color: #BF2323 !important;
+	color: #f2f2f2 !important;
+}
