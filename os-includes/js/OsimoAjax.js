@@ -37,12 +37,25 @@ OsimoJS.prototype.submitPost = function(){
 			else{
 				$("#OsimoPosts").html(data.html);
 				if(data.location.page != that.getPageNum()){
-					that.updatePagination(data.pagination,data.location.page);
+					that.ui.updatePagination(data.pagination,data.location.page);
 					that.updatePageHash(data.location.page);
 				}
 			}
 		}
 	});
+}
+
+OsimoJS.prototype.createThread = function(){
+	var title = $("#OsimoCreateThreadTitle").attr('value');
+	var desc = $("#OsimoCreateThreadDesc").attr('value');
+	var post = $("#OsimoCreateThread").osimoeditor('get');
+	
+	if(title == ''){
+		this.ui.errorElement("#OsimoCreateThreadTitle");
+	}
+	else if(post == ''){
+		
+	}
 }
 
 OsimoJS.prototype.loadPage = function(page){
@@ -72,7 +85,7 @@ OsimoJS.prototype.loadPage = function(page){
 				$("#OsimoThreads").html(data.html);
 			}
 			
-			that.updatePagination(data.pagination,page);
+			that.ui.updatePagination(data.pagination,page);
 			that.updatePageHash(page);
 		}
 	});

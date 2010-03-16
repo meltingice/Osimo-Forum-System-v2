@@ -95,7 +95,7 @@ OsimoModal.prototype.close = function(){
 }
 
 OsimoModal.prototype.divCheck = function(){
-	if($("#OsimoModal").length == 0){
+	if($("#OsimoModalWrap").length == 0){
 		$('body').prepend('\
 			<div id="OsimoModalBk" style="display:none"></div>\
 			<div id="OsimoModalWrap" style="display:none">\

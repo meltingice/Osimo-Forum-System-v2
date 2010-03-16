@@ -26,36 +26,6 @@ OsimoJS.prototype.init = function(){
 	}
 }
 
-/*
- * Right now this assumes you are using spaces to separate
- * the pagination.  Need to make a good way around this and 
- * allow for more options
- */
-OsimoJS.prototype.updatePagination = function(data,page){
-	$(".OsimoPaginationWrap").html(''); //first we clear out the old pagination
-	
-	if(data.first){
-		$(".OsimoPaginationWrap").append('<span class="OsimoPagination" onclick="osimo.loadPage(1)">First</span> ');
-	}
-	
-	for(var i = data.start; i <= data.end; i++){
-		if(i != data.start){ var before = ' '; }
-		else{ var before = ''; }
-		if(i != data.end){ var after = ' '; }
-		else{ var after = ''; }
-		
-		var str = before+'<span class="OsimoPagination';
-		if(i == page){ str += ' OsimoPaginationActivePage'; }
-		str += '" onclick="osimo.loadPage('+i+')">'+i+'</span>'+after;
-		
-		$(".OsimoPaginationWrap").append(str);
-	}
-	
-	if(data.last){
-		$(".OsimoPaginationWrap").append(before+'<span class="OsimoPagination" onclick="osimo.loadPage('+data.num+')">Last</span> ');
-	}
-}
-
 OsimoJS.prototype.updatePageHash = function(page){
 	this.disableHashChangeEvent();
 	var that = this;

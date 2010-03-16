@@ -123,3 +123,63 @@
     margin: 10px 5px 5px 5px;
     color: #444444;
 }
+
+.OsimoModalInput{
+    font-size: 13px;
+    margin: 5px;
+    color: #444444;
+}
+
+.OsimoModalInputTable{
+    margin: 0 0 5px 0;
+    width: 100%;
+}
+
+.OsimoModalInputTable input{
+	width: 100%;
+    padding: 5px;
+    border: 1px #b2b2b2 solid;
+    color: #444444;
+    font-size: 16px;
+    background-image: -moz-linear-gradient(top, #f8f8f8, #ebebeb); /* FF3.6 */
+    background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, #ebebeb),color-stop(1, #f8f8f8)); /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#f8f8f8', endColorstr='#ebebeb'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#f8f8f8', endColorstr='#ebebeb')"; /* IE8 */
+    -moz-border-radius: 5px; /* FF1+ */
+    -webkit-border-radius: 5px; /* Saf3+, Chrome */
+    border-radius: 5px; /* Opera 10.5, IE 9 */
+}
+
+.OsimoModalInputTable input:focus,.OsimoModalInputTable input:hover{
+	background-image: -moz-linear-gradient(top, #fbfbfb, #f2f2f2); /* FF3.6 */
+    background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, #f2f2f2),color-stop(1, #fbfbfb)); /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#fbfbfb', endColorstr='#f2f2f2'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#fbfbfb', endColorstr='#f2f2f2')"; /* IE8 */
+}
+
+#OsimoCreateThreadActions{
+    text-align: center;
+    margin-top: 5px;
+}
+
+#OsimoCreateThreadActions input{
+    border: none;
+    color: #f2f2f2;
+    cursor: pointer;
+    padding: 5px;
+    margin: 0 5px 0 5px;
+    background-image: -moz-linear-gradient(top, #243F5C, #10263F); /* FF3.6 */
+    background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, #10263F),color-stop(1, #243F5C)); /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#243F5C', endColorstr='#10263F'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#243F5C', endColorstr='#10263F')"; /* IE8 */
+    -moz-border-radius: 5px; /* FF1+ */
+    -webkit-border-radius: 5px; /* Saf3+, Chrome */
+    border-radius: 5px; /* Opera 10.5, IE 9 */
+}
+
+#OsimoCreateThreadActions input:hover{
+    background-image: -moz-linear-gradient(top, #3F5E7F, #23405F); /* FF3.6 */
+    background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, #23405F),color-stop(1, #3F5E7F)); /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#3F5E7F', endColorstr='#23405F'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#3F5E7F', endColorstr='#23405F')"; /* IE8 */
+}
