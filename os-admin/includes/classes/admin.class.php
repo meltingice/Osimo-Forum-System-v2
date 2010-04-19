@@ -1,0 +1,7 @@
+<?
+class OsimoAdmin{
+	function OsimoAdmin(){
+		
+	}
+}
+?>

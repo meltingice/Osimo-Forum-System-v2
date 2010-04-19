@@ -1,4 +1,4 @@
 <?
 include('os-includes/config.php');
-$osimo->theme->load('index');
+get('theme')->load('index');
 ?>

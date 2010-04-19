@@ -37,6 +37,16 @@
 	
 	<? endif; endwhile; endif; ?>
 	
+	<div class="thread_actions" style="margin-bottom: -30px">
+		<? if(get('user')->is_logged_in()): ?>
+		<div class="fancy_button" onclick="osimo.ui.createThreadModal()">
+			<img src="<?=URL_THEME?>img/page_add.png" alt="new thread" /> Start a new thread
+		</div>
+		<? else: ?>
+		<div class="fancy_button_disabled">You cannot start a new thread</div>
+		<? endif; ?>
+	</div>
+	
 	<? /* Now lets output threads */ ?>
 	<? if(get('data')->are_threads()): ?>
 		<div id="thread_info">
@@ -44,16 +54,6 @@
 				(<? get('theme')->num_pages(); ?> pages)
 				<? get('theme')->preset_pagination(); ?>
 			</div>	
-			
-			<div class="thread_actions">
-				<? if(get('user')->is_logged_in()): ?>
-				<div class="fancy_button" onclick="osimo.ui.createThreadModal()">
-					<img src="<?=URL_THEME?>img/page_add.png" alt="new thread" /> Start a new thread
-				</div>
-				<? else: ?>
-				<div class="fancy_button_disabled">You cannot start a new thread</div>
-				<? endif; ?>
-			</div>
 		</div>	
 		<div class="category_title">
 			<h1>Threads</h1>

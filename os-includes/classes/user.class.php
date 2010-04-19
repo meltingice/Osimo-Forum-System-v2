@@ -121,7 +121,7 @@ class OsimoUser {
 		if ($this->is_guest) {
 			return true;
 		}
-
+		
 		$last_page = get('paths')->getCurrentPage();
 		$last_visit = get('db')->formatDateForDB();
 		$page_type = get('theme')->page_type;

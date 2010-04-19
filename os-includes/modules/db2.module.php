@@ -643,6 +643,16 @@ class OsimoDBQuery {
 
 		return false;
 	}
+	
+	public function delete(&$num) {
+		$result = $this->query();
+		if($result) {
+			$num = mysql_num_rows();
+			return true;
+		}
+	
+		return false;
+	}
 
 	/**
 	 * Executes a generic MySQL query, and also executes

@@ -58,6 +58,8 @@ OsimoJS.prototype.createThread = function(){
 			
 			return false;
 		});
+		
+		return;
 	}
 	else if(post == ''){
 		this.ui.errorElement("#OsimoCreateThread_editbox",'keyup',function(osimo,element){
@@ -67,7 +69,33 @@ OsimoJS.prototype.createThread = function(){
 			
 			return false;
 		});
+		
+		return;
 	}
+	
+	var ajax = this.processPostData({
+		'forum' : this.getPageID(),
+		'title' : $("#OsimoCreateThreadTitle").attr('value'), 
+		'desc' : $("#OsimoCreateThreadDesc").attr('value'), 
+		'content' : $("#OsimoCreateThread").osimoeditor('get')
+	},
+	'thread','createThread');
+	
+	var that = this;
+	$.ajax({
+		type: 'POST',
+		url: ajax.dest,
+		data: ajax.postData,
+		dataType: 'json',
+		success: function(data) {
+			if(data.error) {
+				that.debug.showError(data.error, 500, 80);
+				return;
+			}
+			
+			window.location.href = "thread.php?id=" + data.thread_id;
+		}
+	});
 }
 
 OsimoJS.prototype.loadPage = function(page){

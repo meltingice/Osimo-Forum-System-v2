@@ -1,4 +1,4 @@
 <?
 include('os-includes/config.php');
-$osimo->theme->load('register');
+get('theme')->load('register');
 ?>

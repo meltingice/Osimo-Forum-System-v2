@@ -31,6 +31,13 @@ class OsimoPaths extends OsimoModule{
 		define('URL_AVATARS',SITE_URL.'os-content/avatars/');
 		define('URL_JS',SITE_URL.'os-includes/js/');
 		define('URL_DEFAULT_CONTENT',SITE_URL.'os-includes/default_content/');
+		
+		/* If we are in the admin panel */
+		if(IS_ADMIN_PAGE == true){
+			define('ABS_ADMIN', ABS_ROOT.'os-admin/');
+			define('ABS_ADMIN_INC', ABS_ADMIN.'includes/');
+			define('ABS_ADMIN_CLASSES', ABS_ADMIN_INC.'classes/');
+		}
 	}
 	
 	private function parseFolderPath($folder,$s_slash=true,$e_slash=true){

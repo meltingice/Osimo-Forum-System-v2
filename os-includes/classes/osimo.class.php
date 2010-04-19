@@ -9,7 +9,7 @@
  */
 class Osimo {
 	public $user, $config, $ajax_mode;
-	public $db, $cache, $paths, $theme, $debug, $bbparser;
+	private $modules;
 	private $defaults, $allowOptMod, $globals;
 	private $cacheOptions, $dbOptions, $debugOptions, $themeOptions, $disableDebug, $debugVisibility;
 	public $GET, $POST;
@@ -31,9 +31,13 @@ class Osimo {
 			define('SITE_FOLDER', $siteFolder);
 		}
 
+		if(!defined('IS_ADMIN_PAGE')){
+			define('IS_ADMIN_PAGE',false);
+		}
+		
 		$this->loadIncludes(SITE_FOLDER);
 
-		$this->paths = new OsimoPaths(SITE_FOLDER);
+		$this->add_module('paths', new OsimoPaths(SITE_FOLDER));
 
 		$this->defaults = array(
 			"debugVisibility"=>array(),
@@ -58,18 +62,47 @@ class Osimo {
 	 * the other core objects required to make the forum run.
 	 */
 	public function init() {
-		$this->debug = new OsimoDebug($this->debugOptions, $this->disableDebug, $this->debugVisibility);
-		$this->cache = new OsimoCache($this->cacheOptions);
-		$this->db = new OsimoDB($this->dbOptions);
-		$this->db->osimo = $this;
+		$this->add_module('debug', new OsimoDebug($this->debugOptions, $this->disableDebug, $this->debugVisibility));
+		$this->add_module('cache', new OsimoCache($this->cacheOptions));
+		$this->add_module('db', new OsimoDB($this->dbOptions));
 
 		$this->loadConfig();
 
-		$this->user = new OsimoUser();
-		$this->theme = new OsimoTheme($this->themeOptions);
-		$this->data = new OsimoData();
-		$this->theme->osimo = $this;
-		$this->bbparser = new OsimoBBParser();
+		$this->add_module('user', new OsimoUser());
+		$this->add_module('theme', new OsimoTheme($this->themeOptions));
+		$this->add_module('data', new OsimoData());
+		$this->add_module('bbparser', new OsimoBBParser());
+		
+		if(IS_ADMIN_PAGE == true){
+			$this->add_module('admin', new OsimoAdmin());
+		}
+	}
+	
+	/**
+	 * Adds a module to the Osimo system. Modules include
+	 * such things as the database interaction class, the
+	 * BBCode parser, the user class, etc.
+	 */
+	public function add_module($name, $mod_obj){
+		if(!is_object($mod_obj)){
+			trigger_error("OsimoCore: Module $name is not a valid object.", E_USER_ERROR); exit;
+		}
+		
+		$this->modules[$name] = $mod_obj;
+	}
+	
+	/**
+	 * Retrieves a module that has already been loaded
+	 * using add_module(). The preferred way to use this function
+	 * is by using the classless get() function at the bottom
+	 * of this file.
+	 */
+	public function get_module($name){
+		if(!isset($this->modules[$name])){
+			get('debug')->logError('Osimo', 'events', "Error loading $name module."); exit;
+		}
+		
+		return $this->modules[$name];
 	}
 
 	private function parseOptions($options) {
@@ -94,7 +127,7 @@ class Osimo {
 
 		if (!isset($_SESSION['config'])) {
 			get('debug')->logMsg('Osimo', 'events', "Loading site config from database...");
-			$data = $this->db->select('*')->from('config')->rows();
+			$data = get('db')->select('*')->from('config')->rows();
 			foreach ($data as $conf) {
 				$this->config[$conf['name']] = $conf['value'];
 			}
@@ -128,8 +161,8 @@ class Osimo {
 	 */
 	public function requireGET($id, $numeric=false, $redirect='index.php') {
 		if (!isset($_GET[$id])) {
-			if ($this->theme->page_type == 'index' || !$redirect) {
-				$this->debug->error("OsimoCore: missing parameter '$id'", __LINE__, __FUNCTION__, __FILE__, true);
+			if (get('theme')->page_type == 'index' || !$redirect) {
+				get('debug')->error("OsimoCore: missing parameter '$id'", __LINE__, __FUNCTION__, __FILE__, true);
 				return false;
 			}
 
@@ -142,7 +175,7 @@ class Osimo {
 					header('Location: '.$redirect); exit;
 				}
 				else {
-					$this->debug->error("OsimoCore: invalid parameter '$id'", __LINE__, __FUNCTION__, __FILE__, true);
+					get('debug')->error("OsimoCore: invalid parameter '$id'", __LINE__, __FUNCTION__, __FILE__, true);
 				}
 
 				return false;
@@ -153,7 +186,7 @@ class Osimo {
 			$this->GET[$id] = $_GET[$id];
 		}
 		else {
-			$this->GET[$id] = $this->db->escape($_GET[$id]);
+			$this->GET[$id] = get('db')->escape($_GET[$id]);
 		}
 
 		return true;
@@ -197,8 +230,8 @@ class Osimo {
 	 */
 	public function requirePOST($id, $numeric=false, $redirect='index.php') {
 		if (!isset($_POST[$id])) {
-			if ($this->theme->page_type == 'index' || !$redirect) {
-				$this->debug->error("OsimoCore: missing parameter '$id'", __LINE__, __FUNCTION__, __FILE__, true);
+			if (get('theme')->page_type == 'index' || !$redirect) {
+				get('debug')->error("OsimoCore: missing parameter '$id'", __LINE__, __FUNCTION__, __FILE__, true);
 				return false;
 			}
 
@@ -211,7 +244,7 @@ class Osimo {
 					header('Location: '.$redirect); exit;
 				}
 				else {
-					$this->debug->error("OsimoCore: invalid parameter '$id'", __LINE__, __FUNCTION__, __FILE__, true);
+					get('debug')->error("OsimoCore: invalid parameter '$id'", __LINE__, __FUNCTION__, __FILE__, true);
 				}
 
 				return false;
@@ -291,6 +324,11 @@ class Osimo {
 		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/cache.module.php';
 		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/theme.module.php';
 		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/data.module.php';
+		
+		if(IS_ADMIN_PAGE){
+			require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-admin/includes/classes/admin.class.php';
+			require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-admin/includes/classes/upgrade.class.php';
+		}
 	}
 
 	/**
@@ -465,10 +503,11 @@ function get($class) {
 		if ($class=='osimo') {
 			return $osimo;
 		}
-
-		if (is_object($osimo->$class)) {
-			return $osimo->$class;
+		elseif($class=='config') {
+			return (object)$osimo->config;
 		}
+
+		return $osimo->get_module($class);
 	}
 
 	return false;
