@@ -130,3 +130,39 @@ OsimoJS.prototype.loadPage = function(page){
 		}
 	});
 }
+
+OsimoJS.prototype.usernameIsTaken = function(element) {
+	return this.usernameIsTaken(this.osimo, element);
+}
+
+OsimoJS.prototype.usernameIsTaken = function(osimo, element) {
+	if(osimo.usernameTaken == null) {
+		osimo.usernameTaken = false;
+	}
+	
+	if(osimo.usernameTimeout) {
+		clearTimeout(osimo.usernameTimeout);
+	}
+	
+	osimo.usernameTimeout = setTimeout(function() {
+		var ajax = osimo.processPostData({'username' : element.attr('value')}, 'user', 'checkUsernameAvailable');
+		
+		$.ajax({
+			type: 'POST',
+			url: ajax.dest,
+			data: ajax.postData,
+			dataType: 'json',
+			success: function(data) {
+				if(data.error) {
+					osimo.debug.showError(data.error,500,80);
+					return;
+				}
+				
+				osimo.usernameTaken = Boolean(data.status);
+			}
+		});
+		
+	}, 400);
+	
+	return osimo.usernameTaken;
+}

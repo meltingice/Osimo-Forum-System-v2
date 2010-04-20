@@ -38,7 +38,8 @@ else{
 session_start();
 
 global $osimo;
-$osimo = new Osimo(
+$osimo = Osimo::getInstance();
+$osimo->init(
 	array(
 		"dbOptions"=>$dbOptions,
 		"cacheOptions"=>$cacheOptions,
@@ -47,5 +48,4 @@ $osimo = new Osimo(
 		"disableDebug"=>false
 	)
 );
-$osimo->init();
 ?>

@@ -255,6 +255,32 @@ class OsimoTheme extends OsimoModule{
 		$var = 'os-includes/login.php';
 		if($echo){ echo $var; } else { return $var; }
 	}
+
+	public function register_username_css_id($echo=true){
+		$var = "osimo_username";
+		if($echo){ echo $var; } else { return $var; }
+	}
+	
+	public function register_username_name($echo=true){
+		$var = "osimo_username";
+		if($echo){ echo $var; } else { return $var; }
+	}
+	
+	public function register_password_css_id($echo=true){
+		$var = "osimo_password";
+		if($echo){ echo $var; } else { return $var; }
+	}
+
+	public function register_password_name($echo=true){
+		$var = "osimo_password";
+		if($echo){ echo $var; } else { return $var; }
+	}
+	
+	public function register_action_url($echo=true){
+		$var = 'os-includes/register.php';
+		if($echo){ echo $var; } else { return $var; }
+	}
+
 	
 	public function osimo_editor($options=false,$pretext='',$css_id='OsimoPostbox'){
 		echo '<textarea id="'.$css_id.'">'.$pretext.'</textarea>';

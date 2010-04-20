@@ -479,6 +479,10 @@ body{
     color: #3F5E7F;
 }
 
+.login_label > img {
+    vertical-align: text-top !important;
+}
+
 #login_form_submit {
     background-color: #D5DDE5;
     padding: 10px;

@@ -62,6 +62,9 @@ OsimoUI.prototype.updatePagination = function(data,page){
 
 OsimoUI.prototype.errorElement = function(ele,event,condition){
 	var element = $(ele);
+	if(element.length == 0)
+		return;
+		
 	if(condition(this.osimo,element) == true){
 		if(!$(ele).hasClass('OsimoErrorElement')){
 			$(ele).addClass("OsimoErrorElement");
@@ -79,6 +82,39 @@ OsimoUI.prototype.errorElement = function(ele,event,condition){
 
 OsimoUI.prototype.removeErrorElement = function(ele){
 	$(ele).removeClass(".OsimoErrorElement");
+}
+
+OsimoUI.prototype.validateField = function(ele, condition, callback) {
+	if(!$.isFunction(condition))
+		return;
+
+	var element = $(ele);
+	var that = this;
+	
+	if(!element.data('OsimoValidate')) {
+		element.live("keyup", function() {
+			that.validateField(ele, condition, callback);
+		});
+		element.data('OsimoValidate', true);
+		element.data('OsimoValidateLast', element.attr('value'));
+	}
+	else if(element.data('OsimoValidateLast') == element.attr('value')) {
+		return;
+	} else {
+		element.data('OsimoValidateLast', element.attr('value'));
+	}
+	
+	if($.isFunction(callback)){
+		callback(condition(this.osimo, element));
+	} else {
+		if(condition(this.osimo, element)) {
+			element.addClass('OsimoValidElement');
+			element.removeClass('OsimoErrorElement');
+		} else {
+			element.addClass('OsimoErrorElement');
+			element.removeClass('OsimoValidElement');
+		}
+	}
 }
 
 OsimoUI.prototype.HTML = {

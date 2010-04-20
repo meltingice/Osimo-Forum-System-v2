@@ -219,5 +219,14 @@ class OsimoUser {
 		if ($inc_time) { return date($this->time_format.' g:ia', $date); }
 		else { return date($this->time_format, $date); }
 	}
+	
+	public static function user_exists($username) {
+		$result = get('db')->select('COUNT(*)')->from('users')->where('username=%s', $username)->limit(1)->cell();
+		if($result > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 ?>

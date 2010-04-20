@@ -8,6 +8,8 @@
  * @author Ryan LeFevre
  */
 class Osimo {
+	private static $INSTANCE;
+	
 	public $user, $config, $ajax_mode;
 	private $modules;
 	private $defaults, $allowOptMod, $globals;
@@ -16,14 +18,34 @@ class Osimo {
 
 	/**
 	 * Class constructor.
-	 * All of the parameters are set in config.php
-	 *
+	 */
+	private function Osimo() {
+		
+	}
+	
+	/**
+	 * Returns the singleton instance of the Osimo object.  
+	 * If it hasn't been instantiated yet, it is first created 
+	 * then returned.
+	 */
+	public static function getInstance() {
+		if(is_null(self::$INSTANCE)){
+			self::$INSTANCE = new Osimo();
+		}
+		
+		return self::$INSTANCE;
+	}
+
+	/**
+	 * This function instantiates all the other core objects required to make the forum run.
+	 * It also sets all options specified in config.php.
+	 * 
 	 * @param Array $options (optional)
 	 *		Array of options set in config.php.
 	 * @param String $siteFolder (optional)
 	 *		Site folder relative to the URL root set in config.php.
 	 */
-	public function Osimo($options=false, $siteFolder=false) {
+	public function init($options=false, $siteFolder=false) {
 		if (!defined('SITE_FOLDER') && (!$siteFolder || empty($siteFolder))) {
 			die("You must specify a site root!");
 		}
@@ -53,15 +75,7 @@ class Osimo {
 		);
 
 		$this->parseOptions($options);
-	}
-
-	/**
-	 * Due to PHP's instantiation method, this init function
-	 * must be called after the Osimo object is created (which
-	 * is done so in loader.php. This function instantiates all
-	 * the other core objects required to make the forum run.
-	 */
-	public function init() {
+	
 		$this->add_module('debug', new OsimoDebug($this->debugOptions, $this->disableDebug, $this->debugVisibility));
 		$this->add_module('cache', new OsimoCache($this->cacheOptions));
 		$this->add_module('db', new OsimoDB($this->dbOptions));
@@ -512,38 +526,4 @@ function get($class) {
 
 	return false;
 }
-
-
-/*
-function __autoload($class){
-	$classes = array(
-		'OsimoBBParser'=>'bbparser',
-		'OsimoForum'=>'forum',
-		'OsimoModel'=>'osimomodel',
-		'OsimoPost'=>'post',
-		'OsimoThread'=>'thread',
-		'OsimoUser'=>'user'
-	);
-	$modules = array(
-		'OsimoCache'=>'cache',
-		'OsimoData'=>'data',
-		'OsimoDB'=>'db2',
-		'OsimoDebug'=>'debug',
-		'OsimoPaths'=>'paths',
-		'OsimoTheme'=>'theme'
-	);
-
-	if(array_key_exists($class,$classes)){
-		$inc = ABS_INC_CLASSES.$classes[$class].'.class.php';
-	}
-	elseif(array_key_exists($class,$modules)){
-		$inc = ABS_INC_MODULES.$modules[$class].'.module.php';
-	}
-	else{
-		$inc = ABS_INC.strtolower(str_replace(' ','_',$class)).'.php';
-	}
-
-	include_once($inc);
-}
-*/
 ?>
