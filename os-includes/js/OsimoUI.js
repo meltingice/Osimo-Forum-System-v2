@@ -105,15 +105,19 @@ OsimoUI.prototype.validateField = function(ele, condition, callback) {
 	}
 	
 	if($.isFunction(callback)){
-		callback(condition(this.osimo, element));
+		condition(this.osimo, element, callback);
 	} else {
-		if(condition(this.osimo, element)) {
-			element.addClass('OsimoValidElement');
-			element.removeClass('OsimoErrorElement');
-		} else {
-			element.addClass('OsimoErrorElement');
-			element.removeClass('OsimoValidElement');
-		}
+		var callback = function(valid) {
+			if(valid) {
+				element.addClass('OsimoValidElement');
+				element.removeClass('OsimoErrorElement');
+			} else {
+				element.addClass('OsimoErrorElement');
+				element.removeClass('OsimoValidElement');
+			}
+		};
+		
+		condition(this.osimo, element, callback);
 	}
 }
 

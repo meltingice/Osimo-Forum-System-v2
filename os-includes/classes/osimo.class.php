@@ -78,7 +78,7 @@ class Osimo {
 	
 		$this->add_module('debug', new OsimoDebug($this->debugOptions, $this->disableDebug, $this->debugVisibility));
 		$this->add_module('cache', new OsimoCache($this->cacheOptions));
-		$this->add_module('db', new OsimoDB($this->dbOptions));
+		$this->add_module('db', OsimoDB::instance(), $this->dbOptions);
 
 		$this->loadConfig();
 
@@ -97,9 +97,13 @@ class Osimo {
 	 * such things as the database interaction class, the
 	 * BBCode parser, the user class, etc.
 	 */
-	public function add_module($name, $mod_obj){
+	public function add_module($name, $mod_obj, $opts=false){
 		if(!is_object($mod_obj)){
 			trigger_error("OsimoCore: Module $name is not a valid object.", E_USER_ERROR); exit;
+		}
+		
+		if($opts) {
+			$mod_obj->init($opts);
 		}
 		
 		$this->modules[$name] = $mod_obj;

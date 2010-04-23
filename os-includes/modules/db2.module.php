@@ -7,6 +7,8 @@
  * @see OsimoDBQuery
  */
 class OsimoDB extends OsimoModule{
+	private static $INSTANCE;
+
 	protected $db_host;
 	protected $db_user;
 	protected $db_pass;
@@ -20,8 +22,11 @@ class OsimoDB extends OsimoModule{
 	 *
 	 * @param Array $options (optional)
 	 */
-	public function OsimoDB($options=false) {
+	private function OsimoDB() {
 		parent::OsimoModule();
+	}
+
+	public function init($options=false) {
 		$this->defaults = array(
 			'db_host'=>'localhost',
 			'db_user'=>'root',
@@ -39,16 +44,19 @@ class OsimoDB extends OsimoModule{
 			));
 
 		$this->parseOptions($options);
-		$this->init();
-	}
-
-	private function init() {
+		
 		if ($this->autoconnect) {
 			$this->connect();
 		}
 	}
 
-
+	public static function instance() {
+		if(is_null(self::$INSTANCE)) {
+			self::$INSTANCE = new OsimoDB();
+		}
+		
+		return self::$INSTANCE;
+	}
 
 	/**
 	 * Connects to the database specified in the options.
@@ -145,7 +153,6 @@ class OsimoDB extends OsimoModule{
 	 * Begins an INSERT MySQL query chain.
 	 *
 	 * @param mixed $args
-	 * @param int $insertID (reference)
 	 * @return new OsimoDBQuery object
 	 */
 	public function insert($args) {

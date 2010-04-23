@@ -135,11 +135,7 @@ OsimoJS.prototype.usernameIsTaken = function(element) {
 	return this.usernameIsTaken(this.osimo, element);
 }
 
-OsimoJS.prototype.usernameIsTaken = function(osimo, element) {
-	if(osimo.usernameTaken == null) {
-		osimo.usernameTaken = false;
-	}
-	
+OsimoJS.prototype.usernameIsTaken = function(osimo, element, callback) {
 	if(osimo.usernameTimeout) {
 		clearTimeout(osimo.usernameTimeout);
 	}
@@ -158,11 +154,10 @@ OsimoJS.prototype.usernameIsTaken = function(osimo, element) {
 					return;
 				}
 				
-				osimo.usernameTaken = Boolean(data.status);
+				var status = Boolean(data.status);
+				callback(status);
 			}
 		});
 		
 	}, 400);
-	
-	return osimo.usernameTaken;
 }
