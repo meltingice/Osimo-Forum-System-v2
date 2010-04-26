@@ -1,3 +1,5 @@
 <?
-header('Location: os-includes/logout.php');
+include('os-includes/config.php');
+UserManager::logout_user();
+header('Location: index.php');
 ?>

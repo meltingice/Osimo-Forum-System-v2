@@ -28,7 +28,7 @@ class Osimo {
 	 * If it hasn't been instantiated yet, it is first created 
 	 * then returned.
 	 */
-	public static function getInstance() {
+	public static function instance() {
 		if(is_null(self::$INSTANCE)){
 			self::$INSTANCE = new Osimo();
 		}
@@ -76,13 +76,14 @@ class Osimo {
 
 		$this->parseOptions($options);
 	
+		/* Initialize modules */
 		$this->add_module('debug', new OsimoDebug($this->debugOptions, $this->disableDebug, $this->debugVisibility));
 		$this->add_module('cache', new OsimoCache($this->cacheOptions));
 		$this->add_module('db', OsimoDB::instance(), $this->dbOptions);
 
 		$this->loadConfig();
 
-		$this->add_module('user', new OsimoUser());
+		UserManager::set_logged_in_user();
 		$this->add_module('theme', new OsimoTheme($this->themeOptions));
 		$this->add_module('data', new OsimoData());
 		$this->add_module('bbparser', new OsimoBBParser());
@@ -342,6 +343,7 @@ class Osimo {
 		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/cache.module.php';
 		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/theme.module.php';
 		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/data.module.php';
+		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/managers/user.manager.php';
 		
 		if(IS_ADMIN_PAGE){
 			require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-admin/includes/classes/admin.class.php';
@@ -520,9 +522,10 @@ function get($class) {
 	if (isset($osimo) && is_object($osimo)) {
 		if ($class=='osimo') {
 			return $osimo;
-		}
-		elseif($class=='config') {
+		} elseif($class=='config') {
 			return (object)$osimo->config;
+		} elseif($class == 'user') {
+			return UserManager::get_logged_in_user();
 		}
 
 		return $osimo->get_module($class);

@@ -6,8 +6,8 @@
  * @author Ryan LeFevre
  */
 class OsimoUser {
-	public $id, $username, $email, $time_format;
-	private $is_guest, $ip_address;
+	public $id, $username, $email, $time_format, $ip_address;
+	private $is_loaded, $is_guest, $is_viewer;
 
 	/**
 	 * Class constructor.
@@ -18,35 +18,52 @@ class OsimoUser {
 	 * @param boolean $is_viewer (optional)
 	 *		Is the user this class is loading the actual user that is browsing the forum?
 	 */
-	function OsimoUser($id=false, $is_viewer=true) {
+	function OsimoUser($args=array(), $is_viewer=true, $autoload=true) {
 		get('debug')->register('OsimoUser', array(
 				'events'=>false,
 				'benchmarking'=>false
 			));
-
-		if ($id && !is_numeric($id)) {
-			get("debug")->error("OsimoUser: invalid user ID specified", true);
-			return false;
+	
+		if(is_array($args)) {
+			foreach($args as $key=>$val) {
+				$this->$key = $val;
+			}
+		} elseif(is_numeric($args)) {
+			$this->id = $args;
 		}
 
-		if (!$is_viewer) {
-			$this->loadBasicInfo($id);
-			return true;
+		if ($this->id && !is_numeric($this->id)) {
+			throw new Exception("OsimoUser: invalid user ID specified");
 		}
-
-		if (isset($_SESSION['user']) && ($id==false || $_SESSION['user']['id']==$id)) {
+		
+		$this->is_viewer = $is_viewer;
+		$this->is_loaded = false;
+		
+		if($autoload) {
+			$this->load();
+		}
+	}
+	
+	public function load() {
+		if (!$this->is_viewer) {
+			$this->loadBasicInfo();
+		} elseif (isset($_SESSION['user']) && ($this->id == false || $_SESSION['user']['id'] == $this->id)) {
 			$this->loadFromSession();
 			$this->is_guest = 0;
-		}
-		elseif (isset($_SESSION['user'])) {
-			$this->loadFromDB($id);
+		} elseif ($this->id != 0) {
+			$this->loadFromDB($this->id);
 			$this->is_guest = 0;
-		}
-		else {
+		} else {
 			$this->loadAsGuest();
 		}
+		
+		$this->is_loaded = true;
 
 		$this->init();
+	}
+	
+	public function is_loaded() {
+		return $this->is_loaded;
 	}
 
 	private function loadFromSession() {
@@ -74,8 +91,8 @@ class OsimoUser {
 		$this->time_format = 'M j, Y';
 	}
 
-	private function loadBasicInfo($id) {
-		get('debug')->logMsg('OsimoUser', 'events', 'Loading information for user ID #'.$id);
+	private function loadBasicInfo() {
+		get('debug')->logMsg('OsimoUser', 'events', 'Loading information for user ID #'.$this->id);
 		$loadInfo = array(
 			'id', 'username',
 			'email', 'ip_address',
@@ -83,7 +100,7 @@ class OsimoUser {
 			'is_admin', 'is_global_mod',
 			'time_joined'
 		);
-		$user = get('db')->select($loadInfo)->from('users')->where('id=%d', $id)->row(true, 86400);
+		$user = get('db')->select($loadInfo)->from('users')->where('id=%d', $this->id)->row(true, 86400);
 		foreach ($user as $key=>$val) {
 			$this->$key = $val;
 		}
@@ -184,19 +201,6 @@ class OsimoUser {
 	}
 
 	/**
-	 * Generates a link to any user's profile page.
-	 *
-	 * @param int $id
-	 *		The ID of the user whose profile you want to link to.
-	 * @param String $username
-	 *		The username of the user whose profile you want to link to.
-	 * @return A link to the user's profile.
-	 */
-	public static function get_profile_link($id, $username) {
-		return '<a href="'.SITE_URL.'profile.php?id='.$id.'">'.$username.'</a>';
-	}
-
-	/**
 	 * Is this user logged in?
 	 *
 	 * @return Boolean representing if the user is logged in or not.
@@ -218,15 +222,6 @@ class OsimoUser {
 		if (!is_numeric($date)) { $date = strtotime($date); }
 		if ($inc_time) { return date($this->time_format.' g:ia', $date); }
 		else { return date($this->time_format, $date); }
-	}
-	
-	public static function user_exists($username) {
-		$result = get('db')->select('COUNT(*)')->from('users')->where('username=%s', $username)->limit(1)->cell();
-		if($result > 0) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 }
 ?>

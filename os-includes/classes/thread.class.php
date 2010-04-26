@@ -42,7 +42,7 @@ class OsimoThread {
 	 */
 	public function get($field) {
 		if ($field == 'original_poster_link') {
-			return OsimoUser::get_profile_link($this->original_poster_id, $this->original_poster);
+			return UserManager::profile_link($this->original_poster_id, $this->original_poster);
 		}
 		elseif (isset($this->$field)) {
 			return $this->$field;

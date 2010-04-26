@@ -38,7 +38,7 @@ else{
 session_start();
 
 global $osimo;
-$osimo = Osimo::getInstance();
+$osimo = Osimo::instance();
 $osimo->init(
 	array(
 		"dbOptions"=>$dbOptions,
@@ -48,4 +48,6 @@ $osimo->init(
 		"disableDebug"=>false
 	)
 );
+
+set_exception_handler(array("OsimoDebug", "exception_handler"));
 ?>

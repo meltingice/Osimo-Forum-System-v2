@@ -1,25 +1,18 @@
 <?
 include('config.php');
+
 if(!$osimo->requirePOST('osimo_username',false) || !$osimo->requirePOST('osimo_password',false)){
 	header('Location: ../login.php?error=missing_data'); exit;
 }
 
-//$osimo->requirePOST('osimo_remember',true,false);
-
 $username = $osimo->POST['osimo_username'];
-$password = sha1($osimo->POST['osimo_password']);
-//$remember = $osimo->POST['osimo_remember'];
+$password = $osimo->POST['osimo_password'];
 
-if(strlen($username)<3||strlen($username)>24||preg_match('/[^\w]/', $username)||strlen($password)==0){
-	header('Location: ../login.php'); exit;
+try {
+	UserManager::login_user($username, $password);
+	
+	header('Location: ../index.php'); exit;
+} catch (Exception $e) {
+	header('Location: ../login.php?error='.$e->getMessage());
 }
-
-$user = get('db')->select('*')->from('users')->where('username=%s AND password=%s',$username,$password)->row();
-if(!$user){
-	header('Location: ../login.php'); exit;
-}
-
-$_SESSION['user'] = $user;
-
-header('Location: ../index.php'); exit;
 ?>

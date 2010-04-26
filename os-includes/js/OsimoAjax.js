@@ -136,6 +136,11 @@ OsimoJS.prototype.usernameIsTaken = function(element) {
 }
 
 OsimoJS.prototype.usernameIsTaken = function(osimo, element, callback) {
+	if(element.attr('value') == ''){
+		callback(true);
+		return;
+	}
+
 	if(osimo.usernameTimeout) {
 		clearTimeout(osimo.usernameTimeout);
 	}

@@ -79,6 +79,10 @@ class OsimoDebug extends OsimoModule{
 		}
 	}
 	
+	public function logException($e) {
+		$this->errors[] = "Uncaught " . get_class($e) . ", code: " . $e->getCode() . "\nMessage: " . htmlentities($e->getMessage());
+	}
+	
 	public function output_log(){
 		if(count($this->msgs) == 0 && count($this->errors) == 0){ return true; }
 		
@@ -107,6 +111,14 @@ class OsimoDebug extends OsimoModule{
 		if($this->disabled()){ return true; }
 		$this->scriptEnd = microtime(true);
 		$this->msgs[] = "Total script approx. execution time: ".($this->scriptEnd - $this->scriptStart);
+	}
+	
+	public static function exception_handler(Exception $e) {
+		echo "test";
+		$debug = get('debug');
+		if($debug) {
+			get('debug')->logException($e);
+		}
 	}
 }
 ?>
