@@ -57,11 +57,13 @@ class UserManager {
 		}
 		
 		if($mgr->activeUser->is_logged_in()) {
-			$_SESSION['user']['id'] = $mgr->activeUser->id;
-			$_SESSION['user']['username'] = $mgr->activeUser->username;
-			$_SESSION['user']['email'] = $mgr->activeUser->email;
-			$_SESSION['user']['time_format'] = $mgr->activeUser->time_format;
-			$_SESSION['user']['ip_address'] = $mgr->activeUser->ip_address;
+			if((isset($_SESSION['user']) && $_SESSION['user']['id'] != $mgr->activeUser->id) || !isset($_SESSION['user'])) {
+				$_SESSION['user']['id'] = $mgr->activeUser->id;
+				$_SESSION['user']['username'] = $mgr->activeUser->username;
+				$_SESSION['user']['email'] = $mgr->activeUser->email;
+				$_SESSION['user']['time_format'] = $mgr->activeUser->time_format;
+				$_SESSION['user']['ip_address'] = $mgr->activeUser->ip_address;
+			}
 		}
 	}
 	
