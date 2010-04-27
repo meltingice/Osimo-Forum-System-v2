@@ -66,7 +66,7 @@ class OsimoData extends OsimoModule{
 		);
 		
 		$args = Osimo::validateOQLArgs($args,$allowed,true);
-		isset(get('osimo')->config['thread_num_per_page']) ? $num = get('osimo')->config['thread_num_per_page'] : $num = 20;
+		isset(get('config')->thread_num_per_page) ? $num = get('config')->thread_num_per_page : $num = 20;
 		if(!$page){
 			isset(get('osimo')->GET['page']) ? $page = get('osimo')->GET['page'] : $page = 1;
 		}
@@ -99,7 +99,7 @@ class OsimoData extends OsimoModule{
 		
 		$args = Osimo::validateOQLArgs($args,$allowed,true);
 
-		isset(get('osimo')->config['post_num_per_page']) ? $num = get('osimo')->config['post_num_per_page'] : $num = 10;
+		isset(get('config')->post_num_per_page) ? $num = get('config')->post_num_per_page : $num = 10;
 		if(!$page){
 			isset(get('osimo')->GET['page']) ? $page = get('osimo')->GET['page'] : $page = 1;
 		}
@@ -357,7 +357,7 @@ class OsimoData extends OsimoModule{
 		if($type == 'thread' || get('theme')->page_type == 'thread'){
 		    if(!isset($this->num_post_pages)){
 		    	$posts = get('db')->select('COUNT(*)')->from('posts')->where('thread=%d',$id)->limit(1)->cell();
-		    	isset(get('osimo')->config['post_num_per_page']) ? $num = get('osimo')->config['post_num_per_page'] : $num = 10;
+		    	isset(get('config')->post_num_per_page) ? $num = get('config')->post_num_per_page : $num = 10;
 		    	$this->num_post_pages = ceil($posts / $num);
 		    }
 		    
@@ -366,7 +366,7 @@ class OsimoData extends OsimoModule{
 		elseif($type == 'forum' || get('theme')->page_type == 'forum'){
 		    if(!isset($this->num_thread_pages)){
 		    	$threads = get('db')->select('COUNT(*)')->from('threads')->where('forum=%d',$id)->limit(1)->cell();
-		    	isset(get('osimo')->config['thread_num_per_page']) ? $num = get('osimo')->config['thread_num_per_page'] : $num = 10;
+		    	isset(get('config')->thread_num_per_page) ? $num = get('config')->thread_num_per_page : $num = 10;
 		    	$this->num_thread_pages = ceil($threads / $num);
 		    }
 		    

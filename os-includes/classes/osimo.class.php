@@ -10,7 +10,7 @@
 class Osimo {
 	private static $INSTANCE;
 	
-	public $user, $config, $ajax_mode;
+	public $ajax_mode;
 	private $modules;
 	private $defaults, $allowOptMod, $globals;
 	private $cacheOptions, $dbOptions, $debugOptions, $themeOptions, $disableDebug, $debugVisibility;
@@ -142,25 +142,10 @@ class Osimo {
 		get('debug')->register('Osimo', array(
 				'events'=>false,
 				'object_creation'=>false
-			));
+			)
+		);
 
-		if (!isset($_SESSION['config'])) {
-			get('debug')->logMsg('Osimo', 'events', "Loading site config from database...");
-			$data = get('db')->select('*')->from('config')->rows();
-			foreach ($data as $conf) {
-				$this->config[$conf['name']] = $conf['value'];
-			}
-			$_SESSION['config'] = $this->config;
-		}
-		else {
-			get('debug')->logMsg('Osimo', 'events', "Loading site config from saved session.");
-			$this->config = $_SESSION['config'];
-		}
-
-		get('debug')->logMsg('Osimo', 'events', "Site config: ".print_r($this->config, true));
-
-		define('OS_SITE_TITLE', $this->config['site_title']);
-		define('OS_SITE_DESC', $this->config['site_description']);
+		ConfigManager::instance()->load();
 	}
 
 	/**
@@ -344,6 +329,7 @@ class Osimo {
 		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/theme.module.php';
 		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/data.module.php';
 		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/managers/user.manager.php';
+		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/managers/config.manager.php';
 		
 		if(IS_ADMIN_PAGE){
 			require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-admin/includes/classes/admin.class.php';
@@ -520,10 +506,10 @@ function get($class) {
 	global $osimo;
 
 	if (isset($osimo) && is_object($osimo)) {
-		if ($class=='osimo') {
+		if ($class == 'osimo') {
 			return $osimo;
-		} elseif($class=='config') {
-			return (object)$osimo->config;
+		} elseif($class == 'config') {
+			return (object) ConfigManager::instance()->getAll();
 		} elseif($class == 'user') {
 			return UserManager::get_logged_in_user();
 		}

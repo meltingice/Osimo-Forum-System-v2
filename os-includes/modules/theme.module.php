@@ -21,8 +21,8 @@ class OsimoTheme extends OsimoModule{
 		$this->css = array();
 		$this->js = array();
 		
-		if(isset(get('osimo')->config['current_theme'])){
-			$this->theme = get('osimo')->config['current_theme'];
+		if(isset(get('config')->current_theme)){
+			$this->theme = get('config')->current_theme;
 		}
 		
 		$this->theme_path = ABS_THEMES.$this->theme.'/';

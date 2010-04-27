@@ -73,7 +73,7 @@ class OsimoPost {
 			}
 		}
 
-		isset(get('osimo')->config['post_num_per_page']) ? $num = get('osimo')->config['post_num_per_page'] : $num = 10;
+		isset(get('config')->post_num_per_page) ? $num = get('config')->post_num_per_page : $num = 10;
 		return array(
 			"page"=>ceil($i / $num),
 			"post"=>$this->id,
