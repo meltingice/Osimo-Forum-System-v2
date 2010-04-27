@@ -1,8 +1,18 @@
-Open-source forum system written in PHP, Javascript, HTML and CSS using MySQL as the database.
+Open-source forum system written in PHP, Javascript, HTML and CSS using MySQL as the database and Memcached as a caching option.
 
 <a href="http://getosimo.com">Project Homepage</a>
 
 Please see LICENSE file for license information.
+
+<h1>Recent Changes</h1>
+Osimo v2 has been undergoing a lot of major transformations lately as I strive to organize the code in better and cleaner ways.  Instead of pushing to get as many features implemented as quickly as possible, I've been working on reorganizing and refactoring the codebase that already works to make it work better before moving forward.
+
+There are still a lot of major features missing from the forum, the main ones being user registration (which should be added very soon) and an administrative panel, among others.  Before these are implemented, I want to make sure that the very basic forum functionality is working as best as it can to avoid any major tweaks down the road that may become more and more complicated to make.
+
+The concept of a "Manager" is something that has been introduced to the code base recently.  These are singleton classes that perform a lot of data management, hence the name.  For instance, the UserManager logs in and out users, registers users, and manages user sessions.  The ConfigManager loads the site config from the database and makes it available to the rest of the code for use.  The rationale behind these classes is that I am trying to move Osimo v2 to an object-oriented codebase as much as possible.  Organizing the code this way will make it much easier to modify and it will also make it easier for collaboration, should anyone want to contribute.
+
+<h1>Feature Wishlist</h1>
+Check out the wiki for more information!
 
 <h1>About the Project</h1>
 This is the second generation of the Osimo Forum System, which is a complete rewrite of the first.  I wanted to fix a lot of problems, restructure a lot of the code, and change the way that things were done to make the system easier to use and modify, and to make it much more flexible.  The first-generation of Osimo was barely object-oriented and the code was well... chaotic to say the least.  It is currently in use at <a href="http://unifaction.com">UniFaction</a> and is serving them well, but it is hard to extend if you are unfamiliar with the entirety of Osimo's source code (which you can find <a href="http://code.google.com/p/osimo">here</a> by the way).
