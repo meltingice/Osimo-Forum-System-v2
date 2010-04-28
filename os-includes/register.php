@@ -5,17 +5,18 @@ if(
 	!$osimo->requirePOST('osimo_password',false) ||
 	!$osimo->requirePOST('osimo_email',false)
 ){
-	header('Location: ../register.php?error=missing_data'); exit;
+	ErrorManager::error_redirect("missing_data", "This theme is not sending all the required data to register a user.");
 }
 
 $username = $osimo->POST['osimo_username'];
 $password = $osimo->POST['osimo_password'];
 $email = $osimo->POST['osimo_email'];
 
-if(strlen($username)<3||strlen($username)>24||preg_match('/[^\w]/', $username)||strlen($password)==0){
-	header('Location: ../register.php?error=invalid_data'); exit;
+try {
+	UserManager::register_user($username, $password, $email);
+	
+	header('Location: ../index.php');
+} catch (OsimoException $e) {
+	ErrorManager::error_redirect($e->getExceptionType(), $e->getMessage(), '../register.php');
 }
-
-/* Create the new user */
-//get('db')->insert('users')->
 ?>

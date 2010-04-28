@@ -15,8 +15,11 @@ class OsimoAjaxUser extends OsimoAjax {
 	
 	protected function check_username_available() {
 		$username = get('osimo')->POST['username'];
+		if(strlen($username) < 3) {
+			$this->json_return(array("status"=>true));
+		}
 		
-		$exists = OsimoUser::user_exists($username);
+		$exists = UserManager::user_exists($username);
 		$this->json_return(array("status"=>$exists));
 	}
 }

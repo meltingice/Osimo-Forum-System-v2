@@ -2,7 +2,7 @@
 include('config.php');
 
 if(!$osimo->requirePOST('osimo_username',false) || !$osimo->requirePOST('osimo_password',false)){
-	header('Location: ../login.php?error=missing_data'); exit;
+	ErrorManager::error_redirect('missing_data', 'This theme is not sending all of the required data needed to login a user.');
 }
 
 $username = $osimo->POST['osimo_username'];
@@ -12,7 +12,7 @@ try {
 	UserManager::login_user($username, $password);
 	
 	header('Location: ../index.php'); exit;
-} catch (Exception $e) {
-	header('Location: ../login.php?error='.$e->getMessage());
+} catch (OsimoException $e) {
+	ErrorManager::error_redirect($e->getExceptionType(), $e->getMessage(), '../login.php');
 }
 ?>

@@ -330,6 +330,8 @@ class Osimo {
 		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/modules/data.module.php';
 		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/managers/user.manager.php';
 		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/managers/config.manager.php';
+		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/managers/error.manager.php';
+		require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-includes/errors/osimo.exception.php';
 		
 		if(IS_ADMIN_PAGE){
 			require $_SERVER['DOCUMENT_ROOT'].$siteFolder.'/os-admin/includes/classes/admin.class.php';

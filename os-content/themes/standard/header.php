@@ -19,6 +19,7 @@
 		<? if(get('user')->is_logged_in()): ?>
 			<li><a href="logout.php">Logout</a></li>		
 		<? else: ?>
+			<li><a href="register.php">Register</a></li>
 			<li><a href="login.php">Login</a></li>	
 		<? endif; ?>
 	</ul>

@@ -9,6 +9,13 @@
 			<h2>Enter your username and password</h2>
 		</div>
 		
+		<? if(ErrorManager::is_error()): ?>
+			<? $error = ErrorManager::get_error(); ?>
+			<div id="error_wrap">
+				<?=$error['msg']?>
+			</div>
+		<? endif; ?>
+		
 		<form id="login_form" action="<? get('theme')->login_action_url(); ?>" method="post">
 			<p class="login_label">username</p>
 			<input type="text" id="<? get('theme')->login_username_css_id(); ?>" name="<? get('theme')->login_username_name(); ?>" />

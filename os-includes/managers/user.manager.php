@@ -71,16 +71,15 @@ class UserManager {
 		$mgr = self::instance();
 		$osimo = Osimo::instance();
 		
-		if(!$osimo->requirePOST('osimo_username',false) || !$osimo->requirePOST('osimo_password',false)){
-			throw new Exception("missing_data");
+		if(strlen($username)<3||strlen($username)>24||preg_match('/[^\w]/', $username)){
+			throw new OsimoException("invalid_username", "The username entered is invalid, please try again.");
 		}
 		
-		$username = $osimo->POST['osimo_username'];
-		$password = self::hash_password($osimo->POST['osimo_password']);
-		
-		if(strlen($username)<3||strlen($username)>24||preg_match('/[^\w]/', $username)||strlen($password)==0){
-			throw new Exception("invalid_username");
+		if(strlen($password) < 3) {
+			throw new OsimoException("invalid_password", "The password entered is invalid, please try again.");
 		}
+		
+		$password = self::hash_password($password);
 		
 		$user = get('db')->
 			select('id,password')->
@@ -93,10 +92,10 @@ class UserManager {
 				self::set_logged_in_user(new OsimoUser($user['id']));
 			}
 			else {
-				throw new Exception("wrong_password");
+				throw new OsimoException("wrong_password", "The password entered is incorrect, please try again.");
 			}
 		} else {
-			throw new Exception("user_not_found");
+			throw new OsimoException("user_not_found", "The username entered could not be found.");
 		}
 	}
 	
@@ -110,6 +109,52 @@ class UserManager {
 		session_destroy();
 		
 		return true;
+	}
+	
+	public static function register_user($username, $password, $email) {
+		$username = OsimoDB::escape($username);
+		$password = self::hash_password($password);
+		$email = OsimoDB::escape($email);
+		$time_joined = OsimoDB::formatDateForDB();
+		
+		/* Error checking */
+		if(strlen($username)<3||strlen($username)>24||preg_match('/[^\w]/', $username)){
+			throw new OsimoException('invalid_username', "The username given is invalid, please choose a different one");
+		}
+		
+		if(!preg_match('/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/', $email)) {
+			throw new OsimoException('invalid_email', "The email address given is not valid.");
+		}
+		
+		if(strlen($password) < 3) {
+			throw new OsimoException('password_too_short', "The password entered is too short, please choose a different one");
+		}
+		
+		if(self::user_exists($username)) {
+			throw new OsimoException('username_exists', "The username given already exists, please login or choose a different username.");
+		}
+		
+		/* Create the new user */
+		$query = "
+			INSERT INTO users (
+				username,
+				email,
+				password,
+				ip_address,
+				time_joined
+			) VALUES (
+				'$username',
+				'$email',
+				'$password',
+				'{$_SERVER['REMOTE_ADDR']}',
+				'$time_joined'
+			)";
+		$result = get('db')->query($query)->insert($userID);
+		if($result) {
+			self::set_logged_in_user(new OsimoUser($userID));
+		} else {
+			throw new OsimoException('fail', "There was an error registering your username, please try again");
+		}
 	}
 	
 	/**

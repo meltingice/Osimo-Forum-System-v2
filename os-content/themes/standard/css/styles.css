@@ -79,6 +79,14 @@ body{
     padding: 0;
 }
 
+#error_wrap {
+    text-align: center;
+    background-color: #8F2323;
+    padding: 10px 0 10px 0;
+    color: #f2f2f2;
+    font-size: 20px;
+}
+
 #breadcrumb_trail{
     padding: 5px;
     margin-bottom: 5px;

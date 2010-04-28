@@ -17,6 +17,8 @@ class OsimoUser {
 	 *		the system will load the user with the ID specified.
 	 * @param boolean $is_viewer (optional)
 	 *		Is the user this class is loading the actual user that is browsing the forum?
+	 * @param boolean $autoload (optional)
+	 *		Should the user be automatically loaded based on the user ID?
 	 */
 	function OsimoUser($args=array(), $is_viewer=true, $autoload=true) {
 		get('debug')->register('OsimoUser', array(
@@ -58,6 +60,8 @@ class OsimoUser {
 		}
 		
 		$this->is_loaded = true;
+		
+		get('debug')->logMsg('OsimoUser', 'events', "Loaded user information:\n".print_r($this, true));
 
 		$this->init();
 	}

@@ -108,3 +108,14 @@ OsimoJS.prototype.executeHashChangeEvent = function(){
 OsimoJS.prototype.trim = function(str){
 	return str.replace(/^\s*/, "").replace(/\s*$/, "").replace(/\s{2,}/, " ");
 }
+
+OsimoJS.prototype.emailIsValid = function(osimo, element, callback) {
+	var email = element.attr('value');
+	var pattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+	callback(pattern.test(email));
+}
+
+OsimoJS.prototype.passwordIsValid = function(osimo, element, callback) {
+	var password = element.attr('value');
+	callback(password.length >= 3);
+}

@@ -266,6 +266,16 @@ class OsimoTheme extends OsimoModule{
 		if($echo){ echo $var; } else { return $var; }
 	}
 	
+	public function register_email_css_id($echo=true){
+		$var = "osimo_email";
+		if($echo){ echo $var; } else { return $var; }
+	}
+	
+	public function register_email_name($echo=true){
+		$var = "osimo_email";
+		if($echo){ echo $var; } else { return $var; }
+	}
+	
 	public function register_password_css_id($echo=true){
 		$var = "osimo_password";
 		if($echo){ echo $var; } else { return $var; }
