@@ -26,6 +26,8 @@ OsimoUI.prototype.createThreadModal = function(){
 				'width' : '100%',
 				'editorHeight' : '170px'
 			});
+			
+			$("#OsimoCreateThreadTitle").focus();
 		}
 	});
 }

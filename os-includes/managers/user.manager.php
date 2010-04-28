@@ -113,7 +113,6 @@ class UserManager {
 	
 	public static function register_user($username, $password, $email) {
 		$username = OsimoDB::escape($username);
-		$password = self::hash_password($password);
 		$email = OsimoDB::escape($email);
 		$time_joined = OsimoDB::formatDateForDB();
 		
@@ -129,6 +128,8 @@ class UserManager {
 		if(strlen($password) < 3) {
 			throw new OsimoException('password_too_short', "The password entered is too short, please choose a different one");
 		}
+		
+		$password = self::hash_password($password);
 		
 		if(self::user_exists($username)) {
 			throw new OsimoException('username_exists', "The username given already exists, please login or choose a different username.");
