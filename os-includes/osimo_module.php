@@ -3,27 +3,17 @@ class OsimoModule{
 	protected $defaults;
 	public $osimo;
 	
-	function OsimoModule(){
-		$this->osimo = get("osimo");
+	function OsimoModule($options=array()){
+		if(!is_array($options) || count($options) == 0) { return false; }
+		
+		$this->set_options($options);
 	}
 	
-	public function options($option){
-		foreach($option as $key=>$val){
-			if(!isset($this->defaults[$key])){ continue; }
+	protected function set_options($options) {
+		if(!is_array($options)) { return false; }
+		
+		foreach($options as $key=>$val){
 			$this->$key = $val;
-		}
-
-		return true;
-	}
-	
-	protected function parseOptions($options){
-		foreach($this->defaults as $key=>$val){
-			if(is_array($options) && isset($options[$key]) && !empty($options[$key])){
-				$this->$key = $options[$key];
-			}
-			else{
-				$this->$key = $val;
-			}
 		}
 	}
 }

@@ -1,5 +1,5 @@
 <?
-class OsimoDebug extends OsimoModule{
+class OsimoDebug {
 	private $modules;
 	private $scriptStart,$scriptEnd;
 	private $timers_start;
@@ -10,11 +10,11 @@ class OsimoDebug extends OsimoModule{
 	private $error_backtrace;
 	private $override;
 	
-	function OsimoDebug($options=false,$override=true,$visibility=array()){
-		parent::OsimoModule();
-		$this->modules = $options;
-		$this->override = $override;
-		$this->visibility = $visibility;
+	function OsimoDebug(){
+		$this->modules = ConfigManager::instance()->get('debug');
+		$options = ConfigManager::instance()->get('debugOptions');
+		$this->override = $options['disableDebug'];
+		$this->visibility = $options['debugVisibility'];
 		$this->scriptStart = microtime(true);
 	}
 	

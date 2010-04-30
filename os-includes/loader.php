@@ -1,19 +1,12 @@
 <?
-
-include($_SERVER['DOCUMENT_ROOT'].SITE_FOLDER.'/os-includes/classes/osimo.class.php');
+include('classes/osimo.class.php');
 
 /* Set DB options */
 $dbOptions = array(
 	'db_host'=>$dbHost,
 	'db_user'=>$dbUser,
 	'db_pass'=>$dbPass,
-	'db_name'=>$dbName,
-	'error_type'=>'stdout',
-	'log_level'=>array(
-		'events'=>true,
-		'queries'=>true,
-		'benchmarking'=>true
-	)
+	'db_name'=>$dbName
 );
 
 /* Set cache options */
@@ -37,17 +30,8 @@ else{
 
 session_start();
 
-global $osimo;
 $osimo = Osimo::instance();
-$osimo->init(
-	array(
-		"dbOptions"=>$dbOptions,
-		"cacheOptions"=>$cacheOptions,
-		"debugOptions"=>$debugOptions,
-		"debugVisibility"=>true,
-		"disableDebug"=>false
-	)
-);
+$osimo->init($config);
 
 set_exception_handler(array("OsimoDebug", "exception_handler"));
 ?>

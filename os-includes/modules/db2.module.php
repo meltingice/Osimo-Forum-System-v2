@@ -9,10 +9,10 @@
 class OsimoDB extends OsimoModule{
 	private static $INSTANCE;
 
-	protected $db_host;
-	protected $db_user;
-	protected $db_pass;
-	protected $db_name;
+	protected $host;
+	protected $user;
+	protected $password;
+	protected $name;
 	protected $autoconnect;
 	private $conn;
 	private $conn_db;
@@ -23,15 +23,16 @@ class OsimoDB extends OsimoModule{
 	 * @param Array $options (optional)
 	 */
 	private function OsimoDB() {
-		parent::OsimoModule();
+		parent::OsimoModule(ConfigManager::instance()->get('database'));
+		$this->autoconnect = true;
 	}
 
-	public function init($options=false) {
+	public function init() {
 		$this->defaults = array(
-			'db_host'=>'localhost',
-			'db_user'=>'root',
-			'db_pass'=>'password',
-			'db_name'=>'database',
+			'host'=>'localhost',
+			'user'=>'root',
+			'password'=>'password',
+			'name'=>'database',
 			'error_type'=>'error_log',
 			'autoconnect'=>true
 		);
@@ -42,8 +43,6 @@ class OsimoDB extends OsimoModule{
 				'queries'=>false,
 				'benchmarking'=>false
 			));
-
-		$this->parseOptions($options);
 		
 		if ($this->autoconnect) {
 			$this->connect();
@@ -65,8 +64,8 @@ class OsimoDB extends OsimoModule{
 	 */
 	public function connect() {
 		if (!$this->conn) { // don't open a new connection if one already exists
-			$this->conn = @mysql_connect($this->db_host, $this->db_user, $this->db_pass) or die("Could not connect to database!");
-			$this->conn_db = @mysql_select_db($this->db_name)or die("Could not select database!");
+			$this->conn = @mysql_connect($this->host, $this->user, $this->password) or die("Could not connect to database!");
+			$this->conn_db = @mysql_select_db($this->name)or die("Could not select database!");
 			get('debug')->logMsg('OsimoDB', 'events', 'Opening database connection...');
 
 			$status = explode('  ', mysql_stat());

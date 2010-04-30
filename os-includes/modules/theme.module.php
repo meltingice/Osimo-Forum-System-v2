@@ -6,14 +6,17 @@ class OsimoTheme extends OsimoModule{
 	private $css,$js;
 	public $classes;
 	
-	function OsimoTheme($options=false){
+	function OsimoTheme(){
 		parent::OsimoModule();
-		$this->defaults = array(
-			"theme"=>"default",
-			"title"=>"Osimo Forum System"
+		
+		$config = ConfigManager::instance();
+		$options = array(
+			'theme' => $config->get('current_theme'),
+			'title' => $config->get('site_title')
 		);
 		
-		$this->parseOptions($options);
+		$this->set_options($options);
+		
 		$this->init();
 	}
 	

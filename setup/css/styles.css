@@ -1,0 +1,141 @@
+body {
+	margin: 0;
+	padding: 0;
+    background-image: url(../img/osimo_bk.jpg);
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-color: #121719;
+}
+
+#logo{
+    text-align: center;
+    margin-top: 50px;
+}
+
+#content_wrap {
+    width: 610px;
+    margin: 40px auto 0 auto;
+    background-color: #ffffff;
+    overflow: hidden;
+     -moz-box-shadow: 0px 0px 15px #000; /* FF3.5+ */
+  -webkit-box-shadow: 0px 0px 15px #000; /* Saf3.0+, Chrome */
+          box-shadow: 0px 0px 15px #000; /* Opera 10.5, IE 9.0 */
+ 
+}
+
+#content_header {
+    border-bottom: 1px #e2e2e2 solid;
+    padding: 20px 0 15px 20px;
+}
+
+#content_header h1 {
+    font-family: Georgia, Times, serif;
+    font-size: 24px;
+    margin: 0;
+    color: #14191a;
+}
+
+.stage { float: left; height: 260px; width: 570px; padding: 20px; }
+
+#content_body {
+    width: 5000px;
+    height: 300px;
+
+    font-family: Georgia, Times, serif;
+    color: #14191a;
+    overflow: hidden;
+}
+
+#content_body p {
+    margin: 0 0 10px 0;
+}
+
+#content_body ul {
+    list-style: square;
+    color: #98ad86;
+    font-size: 14px;
+}
+
+#content_body span {
+    color: #14191a !important;
+}
+
+#database_fields, #cache_fields {
+    margin-left: 20px;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color: #555555;
+}
+
+#database_fields input, #cache_fields input {
+    width: 360px;
+    padding: 7px;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 18px;
+    color: #555555;
+    border: 1px #a2a2a2 solid;
+    -moz-border-radius: 2px; /* FF1+ */
+    -webkit-border-radius: 2px; /* Saf3+, Chrome */
+    border-radius: 2px; /* Opera 10.5, IE 9 */
+}
+
+#database_fields input:focus, #cache_fields input:focus { color: #333333; }                
+
+.action_button {
+    display: block;
+    margin: 18px auto 6px auto;
+    border: 1px #0f0f0f solid;
+    color: #f8f8f8;
+    padding: 8px 16px 8px 16px;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+
+	background-image: -moz-linear-gradient(top, #15527a, #103955); /* FF3.6 */
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #15527a),color-stop(1, #103955)); /* Saf4+, Chrome */
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#15527a', EndColorStr='#103955'); /* IE6,IE7 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#15527a', EndColorStr='#103955')"; /* IE8 */
+	-moz-border-radius: 5px; /* FF1+ */
+	-webkit-border-radius: 5px; /* Saf3+, Chrome */
+	border-radius: 5px; /* Opera 10.5, IE 9 */
+}
+
+#content_footer {
+    height: 30px;
+    border-top: 1px #ebebeb solid;
+    text-align: center;
+	padding-top: 10px;
+}
+
+#content_footer span {
+    display: inline-block;
+    background-color: #d6d6d6;
+    width: 10px;
+    height: 10px;
+    -moz-border-radius: 5px; /* FF1+ */
+	-webkit-border-radius: 5px; /* Saf3+, Chrome */
+	border-radius: 5px; /* Opera 10.5, IE 9 */
+    margin: 0 6px 0 6px;
+}
+
+.active_stage { background-color: #a2a2a2; }
+
+.action_button:hover {
+    background-image: -moz-linear-gradient(top, #27729F, #103955); /* FF3.6 */
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #27729F),color-stop(1, #103955)); /* Saf4+, Chrome */
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#27729F', EndColorStr='#103955'); /* IE6,IE7 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#27729F', EndColorStr='#103955')"; /* IE8 */
+}
+
+#footer_logo {
+    width: 610px;
+    margin: 3px auto;
+    padding: 0;
+    text-align: right;
+    color: #ffffff;
+    text-transform: uppercase;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    opacity: 0.25;
+    font-weight: bold;
+}

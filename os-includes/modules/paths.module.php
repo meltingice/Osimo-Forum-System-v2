@@ -1,14 +1,19 @@
 <?
 class OsimoPaths extends OsimoModule{
-	private $siteFolder;
-	private $siteRoot;
-	private $siteURL;
+	protected $site_folder;
+	private $site_root;
+	private $site_url;
 	
-	public function OsimoPaths($siteFolder){
+	public function OsimoPaths(){
 		parent::OsimoModule();
-		$this->siteFolder = $this->parseFolderPath($siteFolder);
+		$config = array(
+			'site_folder' => ConfigManager::instance()->get('site_folder')
+		);
+		$this->set_options($config);
+		
+		$this->site_folder = $this->parseFolderPath($this->site_folder);
 
-		$this->siteRoot = $_SERVER['DOCUMENT_ROOT'].$this->siteFolder;
+		$this->site_root = $_SERVER['DOCUMENT_ROOT'].$this->site_folder;
 		
 		$this->init();
 	}
@@ -17,16 +22,17 @@ class OsimoPaths extends OsimoModule{
 		$this->determineURL();
 		
 		/* Define absolute paths */
-		define('ABS_ROOT',$this->siteRoot);
+		define('ABS_ROOT',$this->site_root);
 		define('ABS_INC',ABS_ROOT.'os-includes/');
 		define('ABS_INC_CLASSES',ABS_INC.'classes/');
 		define('ABS_INC_MODULES',ABS_INC.'modules/');
+		define('ABS_CONFIG', ABS_INC.'CONFIG');
 		define('ABS_THEMES',ABS_ROOT.'os-content/themes/');
 		define('ABS_AVATARS',ABS_ROOT.'os-content/avatars/');
 		define('ABS_DEFAULT_CONTENT',ABS_INC.'default_content/');
 		
 		/* Define relative paths */
-		define('SITE_URL',$this->siteURL);
+		define('SITE_URL',$this->site_url);
 		define('URL_THEMES',SITE_URL.'os-content/themes/');
 		define('URL_AVATARS',SITE_URL.'os-content/avatars/');
 		define('URL_JS',SITE_URL.'os-includes/js/');
@@ -63,20 +69,20 @@ class OsimoPaths extends OsimoModule{
 	}
 	
 	private function determineURL(){
-		$this->siteURL = 'http://'.$_SERVER['SERVER_NAME'].$this->siteFolder;
+		$this->site_url = 'http://'.$_SERVER['SERVER_NAME'].$this->site_folder;
 	}
 	
 	public function path($path,$abs=true){
 		if($abs){
-			return $this->siteRoot.$this->parseFolderPath($path,false,true);
+			return $this->site_root.$this->parseFolderPath($path,false,true);
 		}
 		else{
-			return $this->siteURL.$this->parseFolderPath($path,false,true);
+			return $this->site_url.$this->parseFolderPath($path,false,true);
 		}
 	}
 	
 	public function getCurrentPage(){
-		$temp = explode($this->siteFolder,$_SERVER['REQUEST_URI']);
+		$temp = explode($this->site_folder,$_SERVER['REQUEST_URI']);
 		return $temp[1];
 	}
 }

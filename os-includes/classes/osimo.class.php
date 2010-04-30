@@ -13,7 +13,6 @@ class Osimo {
 	public $ajax_mode;
 	private $modules;
 	private $defaults, $allowOptMod, $globals;
-	private $cacheOptions, $dbOptions, $debugOptions, $themeOptions, $disableDebug, $debugVisibility;
 	public $GET, $POST;
 
 	/**
@@ -45,13 +44,8 @@ class Osimo {
 	 * @param String $siteFolder (optional)
 	 *		Site folder relative to the URL root set in config.php.
 	 */
-	public function init($options=false, $siteFolder=false) {
-		if (!defined('SITE_FOLDER') && (!$siteFolder || empty($siteFolder))) {
-			die("You must specify a site root!");
-		}
-		elseif (!defined('SITE_FOLDER') && $siteFolder!=false) {
-			define('SITE_FOLDER', $siteFolder);
-		}
+	public function init($config) {
+		define('SITE_FOLDER', $config['site_folder']);
 
 		if(!defined('IS_ADMIN_PAGE')){
 			define('IS_ADMIN_PAGE',false);
@@ -59,32 +53,19 @@ class Osimo {
 		
 		$this->loadIncludes(SITE_FOLDER);
 
-		$this->add_module('paths', new OsimoPaths(SITE_FOLDER));
-
-		$this->defaults = array(
-			"debugVisibility"=>array(),
-			"disableDebug"=>true
-		);
-
-		$this->allowOptMod = array(
-			"cacheOptions",
-			"dbOptions",
-			"debugOptions",
-			"debugVisibility",
-			"disableDebug"
-		);
-
-		$this->parseOptions($options);
-	
+		ConfigManager::instance()->register_user_config($config);
+		
+		$this->add_module('paths', new OsimoPaths());
+		
 		/* Initialize modules */
-		$this->add_module('debug', new OsimoDebug($this->debugOptions, $this->disableDebug, $this->debugVisibility));
-		$this->add_module('cache', new OsimoCache($this->cacheOptions));
-		$this->add_module('db', OsimoDB::instance(), $this->dbOptions);
+		$this->add_module('debug', new OsimoDebug());
+		$this->add_module('cache', new OsimoCache());
 
-		$this->loadConfig();
-
+		OsimoDB::instance()->init();
+		ConfigManager::instance()->load();
 		UserManager::set_logged_in_user();
-		$this->add_module('theme', new OsimoTheme($this->themeOptions));
+		
+		$this->add_module('theme', new OsimoTheme());
 		$this->add_module('data', new OsimoData());
 		$this->add_module('bbparser', new OsimoBBParser());
 		
@@ -510,6 +491,8 @@ function get($class) {
 	if (isset($osimo) && is_object($osimo)) {
 		if ($class == 'osimo') {
 			return $osimo;
+		} elseif($class == 'db') {
+			return OsimoDB::instance();
 		} elseif($class == 'config') {
 			return (object) ConfigManager::instance()->getAll();
 		} elseif($class == 'user') {

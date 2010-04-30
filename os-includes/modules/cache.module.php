@@ -1,5 +1,5 @@
 <?
-class OsimoCache extends OsimoModule{
+class OsimoCache extends OsimoModule {
 	private $memcache;
 	protected $enabled;
 	protected $prefix;
@@ -9,17 +9,9 @@ class OsimoCache extends OsimoModule{
 	protected $cache_time;
 	protected $debug;
 	
-	function OsimoCache($options=false){
-		parent::OsimoModule();
-		$this->defaults = array(
-			'enabled'=>true,
-			'prefix'=>'',
-			'cache_addr'=>'localhost',
-			'cache_port'=>11211,
-			'cache_time'=>300
-		);
+	function OsimoCache(){
+		parent::OsimoModule(ConfigManager::instance()->get('cache'));
 		
-		$this->parseOptions($options);
 		
 		/* Register the cache debugging defaults */
 		get('debug')->register('OsimoCache',array(
