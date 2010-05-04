@@ -1,5 +1,6 @@
 <html lang="en">
 <head>
+	<meta http-equiv="x-ua-compatible" content="IE=8">
 	<title>Osimo Installation</title>
 	<script src="../os-includes/js/jquery/jquery.js" type="text/javascript"></script>
 	<script src="../os-includes/js/jquery/jquery-ui.js" type="text/javascript"></script>
@@ -20,6 +21,8 @@
 			<div id="stage_1" class="stage">
 				<p>Welcome to Osimo, a forum system written from the ground up to be simple to use and modify, yet powerful in its features.  The next few steps will guide you through the installation process.</p>
 				
+				<p>If you make a mistake, there will be a chance before installing to correct it.</p>
+				
 				<p style="margin-top: 20px;">Please be sure to have the following details ready:</p>
 				<ul>
 					<li><span>Database address</span></li>
@@ -28,7 +31,9 @@
 					<li><span>Memcached server(s) <span style="color: #888888 !important">[optional]</span></span></li>
 				</ul>
 				
-				<input type="button" value="GET STARTED" class="action_button" onclick="toStage(2)" />
+				<div class="action_buttons">
+					<input type="button" value="GET STARTED" class="action_button" onclick="toStage(2)" />
+				</div>
 			</div>
 			
 			<div id="stage_2" class="stage">
@@ -55,7 +60,9 @@
 					</table>
 				</div>
 				
-				<input type="button" value="SAVE & CONTINUE" class="action_button" onclick="toStage(3)" />
+				<div class="action_buttons">
+					<input type="button" value="SAVE & CONTINUE" class="action_button" onclick="toStage(3)" />
+				</div>
 			</div>
 			
 			<div id="stage_3" class="stage">
@@ -76,9 +83,66 @@
 						</tr>
 					</table>
 				</div>
+				<div class="action_buttons">
+					<input type="button" value="SKIP THIS STEP" class="action_button" onclick="toStage(4, true)" />
+					<input type="button" value="SAVE & CONTINUE" class="action_button" onclick="toStage(4, false)" />
+				</div>
+			</div>
+			
+			<div id="stage_4" class="stage">
+				<p>Lets review...</p>
 				
-				<input type="button" value="SKIP THIS STEP" class="action_button" onclick="toStage(4)" />
-				<input type="button" value="SAVE & CONTINUE" class="action_button" onclick="toStage(4)" />
+				<p style="">If any of these details look incorrect, please fix them before proceeding.  Click any value to edit it, and hit enter when you are done.</p>
+				<table id="review_table">
+					<tr>
+						<td class="review_label">Database Name:</td>
+						<td class="review_data" id="review_database_name"></td>
+					</tr>
+					<tr>
+						<td class="review_label">Database Username: </td>
+						<td class="review_data" id="review_database_username"></td>
+					</tr>
+					<tr>
+						<td class="review_label">Database Password: </td>
+						<td class="review_data" id="review_database_password"></td>
+					</tr>
+					<tr>
+						<td class="review_label">Database Host: </td>
+						<td class="review_data" id="review_database_host"></td>
+					</tr>
+					<tr>
+						<td class="review_label">Memcached Address(es): </td>
+						<td class="review_data" id="review_cache_addresses"></td>
+					</tr>
+					<tr>
+						<td class="review_label">Memcached Prefix: </td>
+						<td class="review_data" id="review_cache_prefix"></td>
+					</tr>
+				</table>
+				
+				<div class="action_buttons">
+					<input type="button" value="INSTALL OSIMO" class="action_button" onclick="toStage(5)" />
+				</div>
+			</div>
+			
+			<div id="stage_5" class="stage">
+				<p>Installation in progress...</p>
+				
+				<ul id="install_steps">
+					<li><img src="img/icons/time.png"> Sending config to server</li>
+					<li><img src="img/icons/time.png"> Writing config to disk</li>
+					<li><img src="img/icons/time.png"> Connecting to database</li>
+					<li><img src="img/icons/time.png"> Creating database tables</li>
+					<li><img src="img/icons/time.png"> Writing config to database</li>
+				</ul>
+			</div>
+			
+			<div id="stage_6" class="stage">
+				<p>Congratulations! You now have a copy of Osimo installed that is ready for use.  The next step is to visit the admin panel to finish setting up the forum.  We highly recommend that you delete this setup folder from your server to prevent any security issues.  This can be done in the admin panel, or you may do it manually yourself.</p>
+				
+				<div class="action_buttons">
+					<input type="button" value="CONTINUE TO ADMIN PANEL" class="action_button" onclick="toStage(6)" />
+				</div>
 			</div>
 		</div>
 		
@@ -87,6 +151,8 @@
 			<span id="stage_2_dot"></span>
 			<span id="stage_3_dot"></span>
 			<span id="stage_4_dot"></span>
+			<span id="stage_5_dot"></span>
+			<span id="stage_6_dot"></span>
 		</div>
 	</div>
 	

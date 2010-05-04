@@ -11,7 +11,9 @@ function OsimoJS(options){
 
 OsimoJS.prototype.init = function(){
 	this.ui = new OsimoUI(this);
-	this.debug = new OsimoDebug(this.options.debug);
+	
+	if(window.OsimoDebug !== undefined)
+		this.debug = new OsimoDebug(this.options.debug);
 	
 	if(this.isThread() || this.isForum()){
 		this.curPage = this.getPageNum();

@@ -26,7 +26,7 @@ class OsimoPaths extends OsimoModule{
 		define('ABS_INC',ABS_ROOT.'os-includes/');
 		define('ABS_INC_CLASSES',ABS_INC.'classes/');
 		define('ABS_INC_MODULES',ABS_INC.'modules/');
-		define('ABS_CONFIG', ABS_INC.'CONFIG');
+		define('ABS_CONFIG', ABS_INC.'config.php');
 		define('ABS_THEMES',ABS_ROOT.'os-content/themes/');
 		define('ABS_AVATARS',ABS_ROOT.'os-content/avatars/');
 		define('ABS_DEFAULT_CONTENT',ABS_INC.'default_content/');

@@ -10,7 +10,13 @@ class OsimoCache extends OsimoModule {
 	protected $debug;
 	
 	function OsimoCache(){
-		parent::OsimoModule(ConfigManager::instance()->get('cache'));
+		parent::OsimoModule();
+		try{
+			$config = ConfigManager::instance()->get('cache');
+			$this->set_options($config);
+		} catch (Exception $e) {
+			$this->enabled = false;
+		}			
 		
 		
 		/* Register the cache debugging defaults */

@@ -62,7 +62,7 @@ class Osimo {
 		$this->add_module('cache', new OsimoCache());
 
 		OsimoDB::instance()->init();
-		ConfigManager::instance()->load();
+		$this->loadConfig();
 		UserManager::set_logged_in_user();
 		
 		$this->add_module('theme', new OsimoTheme());

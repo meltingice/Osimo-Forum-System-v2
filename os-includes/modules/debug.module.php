@@ -11,11 +11,15 @@ class OsimoDebug {
 	private $override;
 	
 	function OsimoDebug(){
-		$this->modules = ConfigManager::instance()->get('debug');
-		$options = ConfigManager::instance()->get('debugOptions');
-		$this->override = $options['disableDebug'];
-		$this->visibility = $options['debugVisibility'];
-		$this->scriptStart = microtime(true);
+		try {
+			$this->modules = ConfigManager::instance()->get('debug');
+			$options = ConfigManager::instance()->get('debugOptions');
+			$this->override = $options['disableDebug'];
+			$this->visibility = $options['debugVisibility'];
+			$this->scriptStart = microtime(true);
+		} catch (Exception $e) {
+			$this->override = true;
+		}
 	}
 	
 	public function register($module,$defaults){
