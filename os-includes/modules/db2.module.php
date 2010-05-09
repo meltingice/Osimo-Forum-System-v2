@@ -27,7 +27,7 @@ class OsimoDB extends OsimoModule{
 		$this->autoconnect = true;
 	}
 
-	public function init() {
+	public function init($override = array()) {
 		$this->defaults = array(
 			'host'=>'localhost',
 			'user'=>'root',
@@ -36,6 +36,12 @@ class OsimoDB extends OsimoModule{
 			'error_type'=>'error_log',
 			'autoconnect'=>true
 		);
+		
+		if(is_array($override) && count($override) > 0) {
+			foreach($override as $key=>$val) {
+				$this->$key = $val;
+			}
+		}
 
 		/* Register the databases debugging defaults */
 		get('debug')->register('OsimoDB', array(
@@ -64,8 +70,16 @@ class OsimoDB extends OsimoModule{
 	 */
 	public function connect() {
 		if (!$this->conn) { // don't open a new connection if one already exists
-			$this->conn = @mysql_connect($this->host, $this->user, $this->password) or die("Could not connect to database!");
-			$this->conn_db = @mysql_select_db($this->name)or die("Could not select database!");
+			$this->conn = @mysql_connect($this->host, $this->user, $this->password);
+			if(!$this->conn) {
+				throw new OsimoException(OSIMODB_CONNECT_FAIL, "Could not connect to database at {$this->host}");
+			}
+			
+			$this->conn_db = @mysql_select_db($this->name);
+			if(!$this->conn_db) {
+				throw new OsimoException(OSIMODB_SELECT_FAIL, "Could not select the database: {$this->name}");	
+			}
+			
 			get('debug')->logMsg('OsimoDB', 'events', 'Opening database connection...');
 
 			$status = explode('  ', mysql_stat());
@@ -122,8 +136,6 @@ class OsimoDB extends OsimoModule{
 		elseif (!is_numeric($date)) { $date = strtotime($date); }
 		return date('Y-m-d H:i:s', $date);
 	}
-
-
 
 	/**
 	 * Echos any errors reported by MySQL from the 

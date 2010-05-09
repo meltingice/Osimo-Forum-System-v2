@@ -138,10 +138,35 @@
 			</div>
 			
 			<div id="stage_6" class="stage">
+				<p>Great! Now let's setup the administrative account:</p>
+				
+				<div id="admin_info">
+					<table id="admin_fields">
+						<tr>
+							<td style="padding-right: 10px;">Username:</td>
+							<td><input type="text" class="input_field" id="admin_username" /></td>
+						</tr>
+						<tr>
+							<td style="padding-right: 10px;">Password:</td>
+							<td><input type="password" class="input_field" id="admin_password" /></td>
+						</tr>
+						<tr>
+							<td style="padding-right: 10px;">Email:</td>
+							<td><input type="text" class="input_field" id="admin_email" /></td>
+						</tr>
+					</table>
+				</div>
+				
+				<div class="action_buttons">
+					<input type="button" value="CREATE ADMIN ACCOUNT" class="action_button" onclick="createAdminAccount()" />
+				</div>
+			</div>
+			
+			<div id="stage_7" class="stage">
 				<p>Congratulations! You now have a copy of Osimo installed that is ready for use.  The next step is to visit the admin panel to finish setting up the forum.  We highly recommend that you delete this setup folder from your server to prevent any security issues.  This can be done in the admin panel, or you may do it manually yourself.</p>
 				
 				<div class="action_buttons">
-					<input type="button" value="CONTINUE TO ADMIN PANEL" class="action_button" onclick="toStage(6)" />
+					<input type="button" value="CONTINUE TO ADMIN PANEL" class="action_button" />
 				</div>
 			</div>
 		</div>
@@ -153,6 +178,7 @@
 			<span id="stage_4_dot"></span>
 			<span id="stage_5_dot"></span>
 			<span id="stage_6_dot"></span>
+			<span id="stage_7_dot"></span>
 		</div>
 	</div>
 	

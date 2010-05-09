@@ -33,15 +33,16 @@ function toStage(num, skip) {
 	
 	if(!valid) return;
 	
-	/* Slide the content left */
+	/* Slide the content left or right */
 	var loc;
 	if(num < curStage) {
-		loc = parseFloat($("#stage_"+curStage).css('margin-left')) + (610 * (curStage - num));
+		loc = 610;
 	} else {
-		loc = parseFloat($("#stage_"+curStage).css('margin-left')) - (610 * (num - curStage));
+		loc = -610;
 	}
 	
 	$("#stage_"+curStage).animate({'margin-left' : loc + "px"}, 800);
+	$("#stage_"+num).animate({'margin-left' : 0}, 800);
 	
 	/* Change the stage dots */
 	$(".active_stage").animate({backgroundColor : '#d6d6d6'}, 400, function () { $(this).removeClass('active_stage'); });
@@ -158,6 +159,49 @@ function saveReviewField(ele) {
 	destroyInputField(ele, value);
 }
 
+function showError(field, error) {
+	var fields = field.split(';');
+	$.each(fields, function(i, val){
+		$("#review_" + val).addClass('error_field').live('keyup', function() {
+			if($(this).attr('value') != "")
+				$(this).removeClass('error_field');
+		});
+	});
+	
+	toStage(4, true);
+}
+
+function createAdminAccount() {
+	var fields = { username : $("#admin_username").attr('value'), password : $("#admin_password").attr('value'), email : $("#admin_email").attr('value') };
+	var valid = true;
+	
+	$.each(fields, function(i, val) {
+		if(val == "" || val.length < 3) {
+			valid = false;
+			$("#admin_" + i).addClass('error_field').live('keyup', function() {
+				$(this).removeClass('error_field');
+			});
+		}
+	});
+	
+	if(!valid) return;
+	
+	$.ajax({
+		type : 'POST',
+		url : ajax_path,
+		data : {step : 6, user : fields},
+		dataType : 'json',
+		success : function(data) {
+			if(data.error) {
+				alert(data.error);
+				return;
+			}
+			
+			toStage(7);
+		}
+	});
+}
+
 /*
  * All of the installation functions are below and
  * are executed in sequential order by passing the 
@@ -213,7 +257,16 @@ function connectToDatabase(next_step) {
 		dataType : 'json',
 		success : function(data) {
 			if(data.error) {
-				// show error
+				var field;
+				if(data.type == 0) {
+					field = 'database_host';
+				} else if(data.type == 1) {
+					field = 'database_username;database_password';
+				} else if(data.type == 2) {
+					field = 'database_name';
+				}
+				
+				showError(field, data.error);
 				return;
 			}
 			

@@ -60,14 +60,14 @@ body {
     color: #14191a !important;
 }
 
-#database_fields, #cache_fields {
+#database_fields, #cache_fields, #admin_fields {
     margin-left: 20px;
     font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
     font-size: 14px;
     color: #555555;
 }
 
-#database_fields input, #cache_fields input {
+#database_fields input, #cache_fields input, #admin_fields input {
     width: 360px;
     padding: 7px;
     font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -79,7 +79,7 @@ body {
     border-radius: 2px; /* Opera 10.5, IE 9 */
 }
 
-#database_fields input:focus, #cache_fields input:focus { color: #333333; }       
+#database_fields input:focus, #cache_fields input:focus, #admin_fields input:focus { color: #333333; }       
 
 #review_table {
     margin-left: 10px;

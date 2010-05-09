@@ -111,7 +111,7 @@ class UserManager {
 		return true;
 	}
 	
-	public static function register_user($username, $password, $email) {
+	public static function register_user($username, $password, $email, $autologin = true) {
 		$username = OsimoDB::escape($username);
 		$email = OsimoDB::escape($email);
 		$time_joined = OsimoDB::formatDateForDB();
@@ -152,9 +152,32 @@ class UserManager {
 			)";
 		$result = get('db')->query($query)->insert($userID);
 		if($result) {
-			self::set_logged_in_user(new OsimoUser($userID));
+			if($autologin) {
+				self::set_logged_in_user(new OsimoUser($userID));
+			}
+			
+			return $userID;
 		} else {
 			throw new OsimoException('fail', "There was an error registering your username, please try again");
+		}
+	}
+	
+	public static function update_user_info($user, $info) {
+		if(!is_array($info)) {
+			throw new OsimoException(OSIMO_EXPECTED_ARRAY, "Expected array for second argument to update_user_info");
+		}
+		
+		$userID = 0;
+		if(is_numeric($user)) {
+			$userID = $user;
+		} elseif(is_object($user) && $user instanceof OsimoUser) {
+			$userID = $user->id;
+		}
+		
+		$info = OsimoDB::escape($info, true);
+		$result = get('db')->update('users')->set($info)->where("id = %d", $userID)->update();
+		if(!$result) {
+			throw new OsimoException(USER_UPDATE_FAIL, "There was an error updating the information for this user");
 		}
 	}
 	
